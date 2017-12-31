@@ -111,9 +111,36 @@ class PromiseCancelTest extends TestCase
     }
 
     /** @test */
-    public function it_rejects_promise_when_canceller_throws()
+    public function it_rejects_promise_when_canceller_throws_an_exception()
     {
         $exception = new \Exception();
+
+        $promise = new Promise(
+            function () {},
+            function () use ($exception) {
+                throw $exception;
+            }
+        );
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise
+            ->then($this->expectCallableNever(), $mock);
+
+        $promise->cancel();
+    }
+
+    /**
+     * @test
+     * @requires PHP 7
+     */
+    public function it_rejects_promise_when_canceller_throws_an_error()
+    {
+        $exception = new \Error();
 
         $promise = new Promise(
             function () {},

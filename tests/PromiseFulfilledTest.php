@@ -149,7 +149,7 @@ class PromiseFulfilledTest extends TestCase
     }
 
     /** @test */
-    public function it_switches_to_rejection_when_fulfillment_callback_throws()
+    public function it_switches_to_rejection_when_fulfillment_callback_throws_an_exception()
     {
         $promise = new Promise(function ($resolve) {
             $resolve(1);
@@ -161,22 +161,49 @@ class PromiseFulfilledTest extends TestCase
         $mock
             ->expects($this->once())
             ->method('__invoke')
-            ->will($this->throwException($exception));
+            ->with($this->identicalTo($exception));
 
-        $mock2 = $this->createCallableMock();
-        $mock2
+        $promise
+            ->then(
+                function () use ($exception) {
+                    throw $exception;
+                },
+                $this->expectCallableNever()
+            )
+            ->then(
+                $this->expectCallableNever(),
+                $mock
+            );
+    }
+
+    /**
+     * @test
+     * @requires PHP 7
+     */
+    public function it_switches_to_rejection_when_fulfillment_callback_throws_an_error()
+    {
+        $promise = new Promise(function ($resolve) {
+            $resolve(1);
+        });
+
+        $exception = new \Error();
+
+        $mock = $this->createCallableMock();
+        $mock
             ->expects($this->once())
             ->method('__invoke')
             ->with($this->identicalTo($exception));
 
         $promise
             ->then(
-                $mock,
+                function () use ($exception) {
+                    throw $exception;
+                },
                 $this->expectCallableNever()
             )
             ->then(
                 $this->expectCallableNever(),
-                $mock2
+                $mock
             );
     }
 }

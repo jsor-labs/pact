@@ -7,7 +7,7 @@ use Pact;
 class PromiseRejectTest extends TestCase
 {
     /** @test */
-    public function it_rejects_when_resolver_throws()
+    public function it_rejects_when_resolver_throws_an_exception()
     {
         $exception = new \Exception('foo');
 
@@ -25,8 +25,54 @@ class PromiseRejectTest extends TestCase
             ->then($this->expectCallableNever(), $mock);
     }
 
+    /**
+     * @test
+     * @requires PHP 7
+     */
+    public function it_rejects_when_resolver_throws_an_error()
+    {
+        $exception = new \Error('foo');
+
+        $promise = new Promise(function () use ($exception) {
+            throw $exception;
+        });
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise
+            ->then($this->expectCallableNever(), $mock);
+    }
+
     /** @test */
     public function it_rejects_with_an_immediate_exception()
+    {
+        $promise = new Promise(function ($res, $rej) use (&$reject) {
+            $reject = $rej;
+        });
+
+        $exception = new \Exception();
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise
+            ->then($this->expectCallableNever(), $mock);
+
+        $reject($exception);
+    }
+
+    /**
+     * @test
+     * @requires PHP 7
+     */
+    public function it_rejects_with_an_immediate_error()
     {
         $promise = new Promise(function ($res, $rej) use (&$reject) {
             $reject = $rej;

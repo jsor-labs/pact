@@ -132,9 +132,46 @@ class PromiseRejectedTest extends TestCase
     }
 
     /** @test */
-    public function it_propagates_rejection_when_rejection_handler_throws()
+    public function it_propagates_rejection_when_rejection_handler_throws_an_exception()
     {
         $exception = new \Exception();
+
+        $promise = new Promise(function ($resolve, $reject) use ($exception) {
+            $reject($exception);
+        });
+
+        $exception = new \Exception();
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->will($this->throwException($exception));
+
+        $mock2 = $this->createCallableMock();
+        $mock2
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise
+            ->then(
+                $this->expectCallableNever(),
+                $mock
+            )
+            ->then(
+                $this->expectCallableNever(),
+                $mock2
+            );
+    }
+
+    /**
+     * @test
+     * @requires PHP 7
+     */
+    public function it_propagates_rejection_when_rejection_handler_throws_an_error()
+    {
+        $exception = new \Error();
 
         $promise = new Promise(function ($resolve, $reject) use ($exception) {
             $reject($exception);

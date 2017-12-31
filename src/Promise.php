@@ -222,9 +222,9 @@ final class Promise
                 $child->_resolveCallback(
                     \call_user_func($callback, $result)
                 );
-            } catch (\Throwable $e) {
-                $child->_reject($e);
             } catch (\Exception $e) {
+                $child->_reject($e);
+            } catch (\Throwable $e) {
                 $child->_reject($e);
             }
         });
@@ -369,9 +369,9 @@ final class Promise
                     $that->_rejectCallback($reason);
                 }
             );
-        } catch (\Throwable $e) {
-            $this->_reject($e);
         } catch (\Exception $e) {
+            $this->_reject($e);
+        } catch (\Throwable $e) {
             $this->_reject($e);
         }
     }
