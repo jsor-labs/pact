@@ -346,23 +346,10 @@ final class Promise
 
     private function _target()
     {
-        if (Promise::STATE_FOLLOWING !== $this->state) {
-            return $this;
-        }
+        $target = $this;
 
-        $target = $this->result;
-
-        while (
-            $target instanceof Promise &&
-            Promise::STATE_FOLLOWING === $target->state
-        ) {
-            $result = $target->result;
-
-            if (!$result instanceof Promise) {
-                break;
-            }
-
-            $target = $result;
+        while (Promise::STATE_FOLLOWING === $target->state) {
+            $target = $target->result;
         }
 
         return $target;
