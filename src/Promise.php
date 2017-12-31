@@ -112,7 +112,10 @@ final class Promise
 
     public function cancel()
     {
-        if (!$this->isPending()) {
+        if (
+            Promise::STATE_FULFILLED === $this->state ||
+            Promise::STATE_REJECTED === $this->state
+        ) {
             return;
         }
 
@@ -195,16 +198,16 @@ final class Promise
     {
         $parent = $this->_target();
 
-        if ($parent->isPending()) {
+        if (Promise::STATE_PENDING === $parent->state) {
             $parent->handlers[] = array($child, $onFulfilled, $onRejected);
             return;
         }
 
-        self::enqueue(function () use ($parent, $child, $onFulfilled, $onRejected) {
-            $isFulfilled = $parent->isFulfilled();
-            $callback = $isFulfilled ? $onFulfilled : $onRejected;
-            $result = $isFulfilled ? $parent->value() : $parent->reason();
+        $isFulfilled = Promise::STATE_FULFILLED === $parent->state;
+        $callback = $isFulfilled ? $onFulfilled : $onRejected;
+        $result = $parent->result;
 
+        self::enqueue(function () use ($child, $isFulfilled, $callback, $result) {
             if (!\is_callable($callback)) {
                 if ($isFulfilled) {
                     $child->_resolveCallback($result);
@@ -230,7 +233,7 @@ final class Promise
     /** @internal */
     public function _resolveCallback($result = null)
     {
-        if (!$this->isPending()) {
+        if (Promise::STATE_PENDING !== $this->state) {
             return;
         }
 
@@ -316,7 +319,7 @@ final class Promise
 
     private function _settle($state, $result)
     {
-        if (!$this->isPending()) {
+        if (Promise::STATE_PENDING !== $this->state) {
             return;
         }
 
