@@ -128,9 +128,15 @@ final class Promise
         $parentCanceller = null;
 
         if ($cancellationParent) {
-            $cancellationParent->requiredCancelRequests--;
+            if ($cancellationParent instanceof Promise) {
+                $cancellationParent->requiredCancelRequests--;
 
-            if ($cancellationParent->requiredCancelRequests <= 0) {
+                if ($cancellationParent->requiredCancelRequests <= 0) {
+                    $parentCanceller = array($cancellationParent, 'cancel');
+                }
+            } else {
+                // Parent is a foreign promise, check for cancel() is already
+                // done in _resolveCallback()
                 $parentCanceller = array($cancellationParent, 'cancel');
             }
         }
@@ -251,7 +257,7 @@ final class Promise
 
         if (!$result instanceof Promise) {
             if (\method_exists($result, 'cancel')) {
-                $this->canceller = array($result, 'cancel');
+                $this->cancellationParent = $result;
             }
 
             $this->_call(array($result, 'then'));

@@ -451,4 +451,21 @@ class PromiseCancelTest extends TestCase
 
         $follower->cancel();
     }
+
+    /** @test */
+    public function it_invokes_own_cancel_and_on_foreign_cancellable_thenable()
+    {
+        $thenable = new SimpleTestCancellableThenable();
+
+        $promise = new Promise(
+            function ($resolve) use ($thenable) {
+                $resolve($thenable);
+            },
+            $this->expectCallableOnce()
+        );
+
+        $promise->cancel();
+
+        $this->assertTrue($thenable->cancelCalled);
+    }
 }
