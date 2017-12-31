@@ -110,6 +110,33 @@ final class Promise
         return $child;
     }
 
+    public function always($onFulfilledOrRejected)
+    {
+        if (!is_callable($onFulfilledOrRejected)) {
+            \trigger_error(
+                Exception\InvalidArgumentException::invalidAlwaysCallback(
+                    $onFulfilledOrRejected
+                ),
+                \E_USER_WARNING
+            );
+
+            return $this;
+        }
+
+        return $this->then(
+            function ($value) use ($onFulfilledOrRejected) {
+                return Promise::resolve($onFulfilledOrRejected())->then(function () use ($value) {
+                    return $value;
+                });
+            },
+            function ($reason) use ($onFulfilledOrRejected) {
+                return Promise::resolve($onFulfilledOrRejected())->then(function () use ($reason) {
+                    return Promise::reject($reason);
+                });
+            }
+        );
+    }
+
     public function cancel()
     {
         if (
