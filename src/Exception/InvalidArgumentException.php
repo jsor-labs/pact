@@ -44,12 +44,12 @@ class InvalidArgumentException extends \InvalidArgumentException
         );
     }
 
-    public static function invalidAlwaysCallback($onFulfilledOrRejected)
+    public static function invalidAlwaysCallback($onSettled)
     {
         return new InvalidArgumentException(
             \sprintf(
-                'The $onFulfilledOrRejected argument passed to always() must be callable, %s given.',
-                \is_object($onFulfilledOrRejected) ? \get_class($onFulfilledOrRejected) : \gettype($onFulfilledOrRejected)
+                'The $onSettled argument passed to always() must be callable, %s given.',
+                \is_object($onSettled) ? \get_class($onSettled) : \gettype($onSettled)
             )
         );
     }

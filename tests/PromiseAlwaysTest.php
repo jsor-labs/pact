@@ -322,7 +322,7 @@ class PromiseAlwaysTest extends TestCase
         $errors = $errorCollector->stop();
 
         $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onFulfilledOrRejected argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
+        $this->assertContains('The $onSettled argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 
     /**
@@ -355,6 +355,6 @@ class PromiseAlwaysTest extends TestCase
         $errors = $errorCollector->stop();
 
         $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onFulfilledOrRejected argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
+        $this->assertContains('The $onSettled argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 }

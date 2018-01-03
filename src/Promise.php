@@ -110,12 +110,12 @@ final class Promise
         return $child;
     }
 
-    public function always($onFulfilledOrRejected)
+    public function always($onSettled)
     {
-        if (!is_callable($onFulfilledOrRejected)) {
+        if (!is_callable($onSettled)) {
             \trigger_error(
                 Exception\InvalidArgumentException::invalidAlwaysCallback(
-                    $onFulfilledOrRejected
+                    $onSettled
                 ),
                 \E_USER_WARNING
             );
@@ -124,13 +124,13 @@ final class Promise
         }
 
         return $this->then(
-            function ($value) use ($onFulfilledOrRejected) {
-                return Promise::resolve($onFulfilledOrRejected())->then(function () use ($value) {
+            function ($value) use ($onSettled) {
+                return Promise::resolve($onSettled())->then(function () use ($value) {
                     return $value;
                 });
             },
-            function ($reason) use ($onFulfilledOrRejected) {
-                return Promise::resolve($onFulfilledOrRejected())->then(function () use ($reason) {
+            function ($reason) use ($onSettled) {
+                return Promise::resolve($onSettled())->then(function () use ($reason) {
                     return Promise::reject($reason);
                 });
             }
