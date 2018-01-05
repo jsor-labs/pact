@@ -69,20 +69,18 @@ final class Promise
     public function then($onFulfilled = null, $onRejected = null)
     {
         if (null !== $onFulfilled && !is_callable($onFulfilled)) {
-            \trigger_error(
+            ErrorHandler::warning(
                 Exception\InvalidArgumentException::invalidThenFulfillmentCallback(
                     $onFulfilled
-                ),
-                \E_USER_WARNING
+                )
             );
         }
 
         if (null !== $onRejected && !is_callable($onRejected)) {
-            \trigger_error(
+            ErrorHandler::warning(
                 Exception\InvalidArgumentException::invalidThenRejectionCallback(
                     $onRejected
-                ),
-                \E_USER_WARNING
+                )
             );
         }
 
@@ -113,11 +111,10 @@ final class Promise
     public function always($onSettled)
     {
         if (!is_callable($onSettled)) {
-            \trigger_error(
+            ErrorHandler::warning(
                 Exception\InvalidArgumentException::invalidAlwaysCallback(
                     $onSettled
-                ),
-                \E_USER_WARNING
+                )
             );
 
             return $this;
@@ -328,11 +325,10 @@ final class Promise
     public function _rejectCallback($reason)
     {
         if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-            \trigger_error(
+            ErrorHandler::warning(
                 Exception\InvalidArgumentException::nonThrowableRejection(
                     $reason
-                ),
-                \E_USER_WARNING
+                )
             );
         }
 
