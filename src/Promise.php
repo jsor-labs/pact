@@ -53,7 +53,7 @@ final class Promise
         }
 
         $promise = new Promise();
-        $promise->_resolveCallback($promiseOrValue);
+        $promise->_resolve($promiseOrValue);
 
         return $promise;
     }
@@ -61,7 +61,7 @@ final class Promise
     public static function reject($reason)
     {
         $promise = new Promise();
-        $promise->_rejectCallback($reason);
+        $promise->_reject($reason);
 
         return $promise;
     }
@@ -240,16 +240,16 @@ final class Promise
         self::enqueue(function () use ($child, $isFulfilled, $callback, $result) {
             if (!\is_callable($callback)) {
                 if ($isFulfilled) {
-                    $child->_resolveCallback($result);
+                    $child->_resolve($result);
                 } else {
-                    $child->_rejectCallback($result);
+                    $child->_reject($result);
                 }
 
                 return;
             }
 
             try {
-                $child->_resolveCallback(
+                $child->_resolve(
                     \call_user_func($callback, $result)
                 );
             } catch (\Exception $e) {
@@ -261,7 +261,7 @@ final class Promise
     }
 
     /** @internal */
-    public function _resolveCallback($result = null)
+    public function _resolve($result = null)
     {
         if (Promise::STATE_PENDING !== $this->state) {
             return;
@@ -321,20 +321,6 @@ final class Promise
         $this->result = $target;
     }
 
-    /** @internal */
-    public function _rejectCallback($reason)
-    {
-        if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-            ErrorHandler::warning(
-                Exception\InvalidArgumentException::nonThrowableRejection(
-                    $reason
-                )
-            );
-        }
-
-        $this->_reject($reason);
-    }
-
     private function _fulfill($value)
     {
         $this->_settle(Promise::STATE_FULFILLED, $value);
@@ -343,6 +329,14 @@ final class Promise
     /** @internal */
     public function _reject($reason)
     {
+        if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
+            ErrorHandler::warning(
+                Exception\InvalidArgumentException::nonThrowableRejection(
+                    $reason
+                )
+            );
+        }
+        
         $this->_settle(Promise::STATE_REJECTED, $reason);
     }
 
@@ -393,10 +387,10 @@ final class Promise
             \call_user_func(
                 $callback,
                 function ($value = null) use ($that) {
-                    $that->_resolveCallback($value);
+                    $that->_resolve($value);
                 },
                 function ($reason) use ($that) {
-                    $that->_rejectCallback($reason);
+                    $that->_reject($reason);
                 }
             );
         } catch (\Exception $e) {
