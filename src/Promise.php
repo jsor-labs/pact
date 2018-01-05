@@ -5,9 +5,9 @@ namespace Pact;
 final class Promise
 {
     const STATE_PENDING = 0;
-    const STATE_FULFILLED = 1;
-    const STATE_REJECTED = 2;
-    const STATE_FOLLOWING = 3;
+    const STATE_FOLLOWING = 1;
+    const STATE_FULFILLED = 2;
+    const STATE_REJECTED = 3;
 
     private $canceller;
 
