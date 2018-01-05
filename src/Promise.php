@@ -356,6 +356,7 @@ final class Promise
         $this->result = $result;
 
         $this->canceller = null;
+        $this->cancellationParent = null;
 
         $handlers = $this->handlers;
         $this->handlers = null;
