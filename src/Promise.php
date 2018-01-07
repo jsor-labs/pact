@@ -18,7 +18,7 @@ final class Promise
     private $result;
 
     /** @var Promise */
-    private $cancellationParent;
+    private $parent;
 
     private $requiredCancelRequests = 0;
     private $isCancelled = false;
@@ -146,22 +146,22 @@ final class Promise
         $canceller = $this->canceller;
         $this->canceller = null;
 
-        $cancellationParent = $this->cancellationParent;
-        $this->cancellationParent = null;
+        $parent = $this->parent;
+        $this->parent = null;
 
         $parentCanceller = null;
 
-        if ($cancellationParent) {
-            if ($cancellationParent instanceof Promise) {
-                $cancellationParent->requiredCancelRequests--;
+        if ($parent) {
+            if ($parent instanceof Promise) {
+                $parent->requiredCancelRequests--;
 
-                if ($cancellationParent->requiredCancelRequests <= 0) {
-                    $parentCanceller = array($cancellationParent, 'cancel');
+                if ($parent->requiredCancelRequests <= 0) {
+                    $parentCanceller = array($parent, 'cancel');
                 }
             } else {
                 // Parent is a foreign promise, check for cancel() is already
                 // done in _resolveCallback()
-                $parentCanceller = array($cancellationParent, 'cancel');
+                $parentCanceller = array($parent, 'cancel');
             }
         }
 
@@ -281,7 +281,7 @@ final class Promise
 
         if (!$result instanceof Promise) {
             if (\method_exists($result, 'cancel')) {
-                $this->cancellationParent = $result;
+                $this->parent = $result;
             }
 
             $this->_call(array($result, 'then'));
@@ -307,18 +307,17 @@ final class Promise
             return;
         }
 
+        $this->state = Promise::STATE_FOLLOWING;
+
         $result->requiredCancelRequests++;
-        $this->cancellationParent = $result;
+        $this->parent = $result;
 
         $target->handlers = \array_merge(
             $target->handlers,
             $this->handlers
         );
 
-        $this->handlers = array();
-
-        $this->state = Promise::STATE_FOLLOWING;
-        $this->result = $target;
+        $this->handlers = null;
     }
 
     private function _fulfill($value)
@@ -350,7 +349,7 @@ final class Promise
         $this->result = $result;
 
         $this->canceller = null;
-        $this->cancellationParent = null;
+        $this->parent = null;
 
         $handlers = $this->handlers;
         $this->handlers = null;
@@ -373,7 +372,7 @@ final class Promise
         $target = $this;
 
         while (Promise::STATE_FOLLOWING === $target->state) {
-            $target = $target->result;
+            $target = $target->parent;
         }
 
         return $target;
