@@ -4,7 +4,10 @@ namespace Pact;
 
 class PromiseTest extends TestCase
 {
-    /** @test */
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     */
     public function it_allows_construction_without_resolver()
     {
         new Promise();
@@ -18,7 +21,7 @@ class PromiseTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 24', '/') . '/'
+            '/' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 27', '/') . '/'
         );
 
         new Promise($invalidCallable);
@@ -32,7 +35,7 @@ class PromiseTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 38', '/') . '/'
+            '/' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 41', '/') . '/'
         );
 
         new Promise(null, $invalidCallable);
