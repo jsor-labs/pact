@@ -4,7 +4,9 @@ namespace Pact;
 
 final class ErrorHandler
 {
-    /** @internal */
+    /**
+     * @internal
+     */
     public static function warning($warning)
     {
         try {
@@ -20,7 +22,9 @@ final class ErrorHandler
         }
     }
 
-    /** @internal */
+    /**
+     * @internal
+     */
     public static function error($error)
     {
         try {

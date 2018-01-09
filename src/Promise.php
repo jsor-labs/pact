@@ -25,6 +25,11 @@ final class Promise
 
     private static $queue;
 
+    /**
+     * @param callable|null $resolver
+     * @param callable|null $canceller
+     * @throws \TypeError
+     */
     public function __construct($resolver = null, $canceller = null)
     {
         if (null !== $resolver && !\is_callable($resolver)) {
@@ -58,6 +63,10 @@ final class Promise
         }
     }
 
+    /**
+     * @param Promise|mixed|null $promiseOrValue
+     * @return Promise
+     */
     public static function resolve($promiseOrValue = null)
     {
         if ($promiseOrValue instanceof Promise) {
@@ -70,6 +79,10 @@ final class Promise
         return $promise;
     }
 
+    /**
+     * @param \Exception|\Throwable $reason
+     * @return Promise
+     */
     public static function reject($reason)
     {
         $promise = new Promise();
@@ -78,6 +91,12 @@ final class Promise
         return $promise;
     }
 
+    /**
+     * @param callable|null $onFulfilled
+     * @param callable|null $onRejected
+     * @return Promise
+     * @throws \TypeError
+     */
     public function then($onFulfilled = null, $onRejected = null)
     {
         if (null !== $onFulfilled && !is_callable($onFulfilled)) {
@@ -128,6 +147,11 @@ final class Promise
         return $child;
     }
 
+    /**
+     * @param callable $onSettled
+     * @return Promise
+     * @throws \TypeError
+     */
     public function always($onSettled)
     {
         if (!is_callable($onSettled)) {
@@ -200,16 +224,25 @@ final class Promise
         $this->isCancelled = true;
     }
 
+    /**
+     * @return bool
+     */
     public function isFulfilled()
     {
         return Promise::STATE_FULFILLED === $this->state;
     }
 
+    /**
+     * @return bool
+     */
     public function isRejected()
     {
         return Promise::STATE_REJECTED === $this->state;
     }
 
+    /**
+     * @return bool
+     */
     public function isPending()
     {
         return (
@@ -219,11 +252,17 @@ final class Promise
         );
     }
 
+    /**
+     * @return bool
+     */
     public function isCancelled()
     {
         return $this->isCancelled;
     }
 
+    /**
+     * @return mixed
+     */
     public function value()
     {
         if (Promise::STATE_FULFILLED === $this->state) {
@@ -233,6 +272,9 @@ final class Promise
         throw Exception\LogicException::valueFromNonFulfilledPromise();
     }
 
+    /**
+     * @return \Exception|\Throwable
+     */
     public function reason()
     {
         if (Promise::STATE_REJECTED === $this->state) {
@@ -282,7 +324,9 @@ final class Promise
         });
     }
 
-    /** @internal */
+    /**
+     * @internal
+     */
     public function _resolve($result = null)
     {
         if (Promise::STATE_PENDING !== $this->state) {
@@ -347,7 +391,9 @@ final class Promise
         $this->_settle(Promise::STATE_FULFILLED, $value);
     }
 
-    /** @internal */
+    /**
+     * @internal
+     */
     public function _reject($reason)
     {
         if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
