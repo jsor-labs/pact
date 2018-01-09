@@ -1,0 +1,58 @@
+<?php
+
+namespace Pact;
+
+final class TypeError extends \TypeError
+{
+    public static function createForNonClassTypeHintArgument
+    (
+        $template,
+        $method,
+        $arg
+    ) {
+        $file = '(n/a)';
+        $line = '(n/a)';
+
+        if (PHP_VERSION_ID >= 54000) {
+            // Second parameter available since 5.4.0
+            $trace = \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        } else {
+            // DEBUG_BACKTRACE_IGNORE_ARGS available since 5.3.6
+            $trace = \defined('DEBUG_BACKTRACE_IGNORE_ARGS')
+                ? \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
+                : \debug_backtrace(false);
+        }
+
+        foreach ($trace as $step) {
+            $traceMethod = $step['function'];
+
+            if (!empty($step['class'])) {
+                $traceMethod = $step['class'] . '::' . $traceMethod;
+            }
+
+            if ($traceMethod !== $method) {
+                continue;
+            }
+
+            if (isset($step['file'])) {
+                $file = $step['file'];
+            }
+
+            if (isset($step['line'])) {
+                $line = $step['line'];
+            }
+
+            break;
+        }
+
+        return new TypeError(
+            \sprintf(
+                $template,
+                $method,
+                \strtolower(\gettype($arg)),
+                $file,
+                $line
+            )
+        );
+    }
+}

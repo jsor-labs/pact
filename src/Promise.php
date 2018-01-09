@@ -28,31 +28,23 @@ final class Promise
     /**
      * @param callable|null $resolver
      * @param callable|null $canceller
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function __construct($resolver = null, $canceller = null)
     {
         if (null !== $resolver && !\is_callable($resolver)) {
-            throw new \TypeError(
-                sprintf(
-                    'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %d',
-                    __METHOD__,
-                    \gettype($resolver),
-                    __FILE__,
-                    __LINE__ - 9
-                )
+            throw TypeError::createForNonClassTypeHintArgument(
+                'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %s',
+                __METHOD__,
+                $resolver
             );
         }
 
         if (null !== $canceller && !\is_callable($canceller)) {
-            throw new \TypeError(
-                sprintf(
-                    'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %d',
-                    __METHOD__,
-                    \gettype($canceller),
-                    __FILE__,
-                    __LINE__ - 21
-                )
+            throw TypeError::createForNonClassTypeHintArgument(
+                'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %s',
+                __METHOD__,
+                $canceller
             );
         }
 
@@ -95,31 +87,23 @@ final class Promise
      * @param callable|null $onFulfilled
      * @param callable|null $onRejected
      * @return Promise
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function then($onFulfilled = null, $onRejected = null)
     {
         if (null !== $onFulfilled && !is_callable($onFulfilled)) {
-            throw new \TypeError(
-                sprintf(
-                    'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %d',
-                    __METHOD__,
-                    \gettype($onFulfilled),
-                    __FILE__,
-                    __LINE__ - 9
-                )
+            throw TypeError::createForNonClassTypeHintArgument(
+                'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %s',
+                __METHOD__,
+                $onFulfilled
             );
         }
 
         if (null !== $onRejected && !is_callable($onRejected)) {
-            throw new \TypeError(
-                sprintf(
-                    'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %d',
-                    __METHOD__,
-                    \gettype($onRejected),
-                    __FILE__,
-                    __LINE__ - 21
-                )
+            throw TypeError::createForNonClassTypeHintArgument(
+                'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %s',
+                __METHOD__,
+                $onRejected
             );
         }
 
@@ -150,19 +134,15 @@ final class Promise
     /**
      * @param callable $onSettled
      * @return Promise
-     * @throws \TypeError
+     * @throws TypeError
      */
     public function always($onSettled)
     {
         if (!is_callable($onSettled)) {
-            throw new \TypeError(
-                sprintf(
-                    'Argument 1 passed to %s() must be callable, %s given, called in %s on line %d',
-                    __METHOD__,
-                    \gettype($onSettled),
-                    __FILE__,
-                    __LINE__ - 9
-                )
+            throw TypeError::createForNonClassTypeHintArgument(
+                'Argument 1 passed to %s() must be callable, %s given, called in %s on line %s',
+                __METHOD__,
+                $onSettled
             );
         }
 

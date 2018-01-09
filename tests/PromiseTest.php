@@ -17,12 +17,9 @@ class PromiseTest extends TestCase
      */
     public function it_throws_for_invalid_resolver($invalidCallable, $type)
     {
-        $class = new \ReflectionClass('Pact\Promise');
-        $method = $class->getMethod('__construct');
-
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
+            '/' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 25', '/') . '/'
         );
 
         new Promise($invalidCallable);
@@ -34,12 +31,9 @@ class PromiseTest extends TestCase
      */
     public function it_throws_for_invalid_canceller($invalidCallable, $type)
     {
-        $class = new \ReflectionClass('Pact\Promise');
-        $method = $class->getMethod('__construct');
-
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
+            '/' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 39', '/') . '/'
         );
 
         new Promise(null, $invalidCallable);
