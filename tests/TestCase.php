@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
 
     public function setExpectedExceptionRegExp($exceptionName, $exceptionMessageRegExp = '', $exceptionCode = null)
     {
-        if (!method_exists($this, 'expectExceptionRegExp')) {
+        if (!method_exists($this, 'expectExceptionMessageRegExp')) {
             parent::setExpectedExceptionRegExp(
                 $exceptionName,
                 $exceptionMessageRegExp,
