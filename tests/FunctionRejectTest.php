@@ -42,29 +42,23 @@ class FunctionRejectTest extends TestCase
             );
     }
 
-    /** @test */
-    public function it_rejects_a_value_but_triggers_warning()
+    /**
+     * @test
+     * @dataProvider invalidReasonProvider
+     **/
+    public function it_throws_for_invalid_rejection_reason($invalidReason, $type)
     {
-        $expected = 1;
+        if (PHP_VERSION_ID < 70000) {
+            $regexp = '/' . preg_quote('Argument 1 passed to Pact\Promise::reject() must be an instance of Exception, ' . $type . ' given, called in ' . __FILE__ . ' on line 62', '/') . '/';
+        } else {
+            $regexp = '/' . preg_quote('Argument 1 passed to Pact\Promise::reject() must implement interface Throwable, ' . $type . ' given, called in ' . __FILE__ . ' on line 62', '/') . '/';
+        }
 
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($expected));
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            $regexp
+        );
 
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
-
-        Promise::reject($expected)
-            ->then(
-                $this->expectCallableNever(),
-                $mock
-            );
-
-        $errors = $errorCollector->stop();
-
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The rejection reason must be of type \Throwable or \Exception, integer given.', $errors[0]['errstr']);
+        Promise::reject($invalidReason);
     }
 }

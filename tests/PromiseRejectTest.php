@@ -147,19 +147,64 @@ class PromiseRejectTest extends TestCase
         $reject(new \Exception('2'));
     }
 
-    /** @test */
-    public function it_triggers_warning_when_rejected_with_non_throwable()
+    /**
+     * @test
+     * @dataProvider invalidReasonProvider
+     **/
+    public function it_wraps_non_throwable_reasons_in_rejection_exception($invalidReason, $type, $repr)
     {
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
+        $that = $this;
 
-        new Promise(function ($res, $rej) {
-            $rej(1);
+        $promise = new Promise(function ($res, $rej) use ($invalidReason) {
+            $rej($invalidReason);
         });
 
-        $errors = $errorCollector->stop();
+        $failure = null;
 
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The rejection reason must be of type \Throwable or \Exception, integer given.', $errors[0]['errstr']);
+        $promise
+            ->then(null, function ($e) use ($that, $invalidReason, $type, $repr) {
+                $that->assertInstanceOf('Pact\ReasonException', $e);
+
+                $that->assertEquals('Promise rejected with ' . $repr, $e->getMessage());
+
+                $that->assertSame($invalidReason, $e->getReason());
+            })
+            ->then(null, function ($e) use (&$failure) {
+                $failure = $e;
+            });
+
+        if ($failure) {
+            PromiseRejectTest::fail($failure);
+        }
+    }
+
+    /**
+     * @test
+     **/
+    public function it_wraps_missing_reason_in_rejection_exception()
+    {
+        $that = $this;
+
+        $promise = new Promise(function ($res, $rej) {
+            $rej();
+        });
+
+        $failure = null;
+
+        $promise
+            ->then(null, function ($e) use ($that) {
+                $that->assertInstanceOf('Pact\ReasonException', $e);
+
+                $that->assertEquals('Promise rejected with <NULL>', $e->getMessage());
+
+                $that->assertNull($e->getReason());
+            })
+            ->then(null, function ($e) use (&$failure) {
+                $failure = $e;
+            });
+
+        if ($failure) {
+            PromiseRejectTest::fail($failure);
+        }
     }
 }

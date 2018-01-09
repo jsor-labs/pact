@@ -10,6 +10,32 @@ final class TypeError extends \TypeError
         $method,
         $arg
     ) {
+        return self::create(
+            $template,
+            $method,
+            \strtolower(\gettype($arg))
+        );
+    }
+
+    public static function createForClassTypeHintArgument
+    (
+        $template,
+        $method,
+        $arg
+    ) {
+        return self::create(
+            $template,
+            $method,
+            \is_object($arg) ? 'instance of ' . \get_class($arg) : \strtolower(\gettype($arg))
+        );
+    }
+
+    public static function create
+    (
+        $template,
+        $method,
+        $argType
+    ) {
         $file = '(n/a)';
         $line = '(n/a)';
 
@@ -49,7 +75,7 @@ final class TypeError extends \TypeError
             \sprintf(
                 $template,
                 $method,
-                \strtolower(\gettype($arg)),
+                $argType,
                 $file,
                 $line
             )

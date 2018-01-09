@@ -74,9 +74,26 @@ final class Promise
     /**
      * @param \Exception|\Throwable $reason
      * @return Promise
+     * @throws TypeError
      */
     public static function reject($reason)
     {
+        if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
+            if (interface_exists('Throwable')) {
+                throw TypeError::createForClassTypeHintArgument(
+                    'Argument 1 passed to %s() must implement interface Throwable, %s given, called in %s on line %s',
+                    __METHOD__,
+                    $reason
+                );
+            } else {
+                throw TypeError::createForClassTypeHintArgument(
+                    'Argument 1 passed to %s() must be an instance of Exception, %s given, called in %s on line %s',
+                    __METHOD__,
+                    $reason
+                );
+            }
+        }
+
         $promise = new Promise();
         $promise->_reject($reason);
 
@@ -376,14 +393,6 @@ final class Promise
      */
     public function _reject($reason)
     {
-        if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-            ErrorHandler::warning(
-                Exception\InvalidArgumentException::nonThrowableRejection(
-                    $reason
-                )
-            );
-        }
-        
         $this->_settle(Promise::STATE_REJECTED, $reason);
     }
 
@@ -436,7 +445,15 @@ final class Promise
                 function ($value = null) use ($that) {
                     $that->_resolve($value);
                 },
-                function ($reason) use ($that) {
+                // Allow rejection with non-throwable reasons to ensure
+                // interoperability with foreign promise implementations which
+                // may allow arbitrary reason types or even rejecting without
+                // a reason.
+                function ($reason = null) use ($that) {
+                    if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
+                        $reason = new ReasonException($reason);
+                    }
+
                     $that->_reject($reason);
                 }
             );

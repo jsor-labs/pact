@@ -99,4 +99,20 @@ abstract class TestCase extends BaseTestCase
             'falsey'       => array(0, 'integer')
         );
     }
+
+    public function invalidReasonProvider()
+    {
+        return array(
+            'string'       => array('foo', 'string', 'foo'),
+            'empty string' => array('', 'string', ''),
+            'object'       => array(new \stdClass, 'instance of stdClass', 'stdClass'),
+            'array'        => array(array(), 'array', '<ARRAY>'),
+            'true'         => array(true, 'boolean', '<TRUE>'),
+            'false'        => array(false, 'boolean', '<FALSE>'),
+            'integer'      => array(1, 'integer', '1'),
+            'float'        => array(1.1, 'double', '1.1'),
+            'resource'     => array(fopen('php://temp', 'r'), 'resource', 'stream'),
+            'null'        => array(null, 'null', '<NULL>'),
+        );
+    }
 }
