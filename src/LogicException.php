@@ -1,6 +1,6 @@
 <?php
 
-namespace Pact\Exception;
+namespace Pact;
 
 class LogicException extends \LogicException
 {

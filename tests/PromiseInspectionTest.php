@@ -88,7 +88,7 @@ class PromiseInspectionTest extends TestCase
 
     /** 
      * @test
-     * @expectedException Pact\Exception\LogicException
+     * @expectedException Pact\LogicException
      * @expectedExceptionMessage Cannot get the fulfillment value of a non-fulfilled promise.
      */
     public function it_throws_when_getting_value_from_a_pending_promise()
@@ -100,7 +100,7 @@ class PromiseInspectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException Pact\Exception\LogicException
+     * @expectedException Pact\LogicException
      * @expectedExceptionMessage Cannot get the fulfillment value of a non-fulfilled promise.
      */
     public function it_throws_when_getting_value_from_a_rejected_promise()
@@ -112,7 +112,7 @@ class PromiseInspectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException Pact\Exception\LogicException
+     * @expectedException Pact\LogicException
      * @expectedExceptionMessage Cannot get the rejection reason of a non-rejected promise.
      */
     public function it_throws_when_getting_reason_from_a_pending_promise()
@@ -124,7 +124,7 @@ class PromiseInspectionTest extends TestCase
 
     /**
      * @test
-     * @expectedException Pact\Exception\LogicException
+     * @expectedException Pact\LogicException
      * @expectedExceptionMessage Cannot get the rejection reason of a non-rejected promise.
      */
     public function it_throws_when_getting_reason_from_a_fulfilled_promise()

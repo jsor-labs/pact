@@ -132,7 +132,7 @@ class PromiseResolveTest extends TestCase
         $mock
             ->expects($this->once())
             ->method('__invoke')
-            ->with(new Pact\Exception\LogicException('Cannot resolve a promise with itself.'));
+            ->with(new Pact\LogicException('Cannot resolve a promise with itself.'));
 
         $promise
             ->then(
@@ -172,7 +172,7 @@ class PromiseResolveTest extends TestCase
         $mock
             ->expects($this->once())
             ->method('__invoke')
-            ->with(new Pact\Exception\LogicException('Cannot resolve a promise with itself.'));
+            ->with(new Pact\LogicException('Cannot resolve a promise with itself.'));
 
         $promise2->then(
             $this->expectCallableNever(),

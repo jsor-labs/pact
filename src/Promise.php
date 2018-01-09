@@ -266,7 +266,7 @@ final class Promise
             return $this->result;
         }
 
-        throw Exception\LogicException::valueFromNonFulfilledPromise();
+        throw LogicException::valueFromNonFulfilledPromise();
     }
 
     /**
@@ -278,7 +278,7 @@ final class Promise
             return $this->result;
         }
 
-        throw Exception\LogicException::reasonFromNonRejectedPromise();
+        throw LogicException::reasonFromNonRejectedPromise();
     }
 
     private function _handle(
@@ -337,7 +337,7 @@ final class Promise
 
         if ($this === $result) {
             $this->_reject(
-                Exception\LogicException::circularResolution()
+                LogicException::circularResolution()
             );
             return;
         }
@@ -355,7 +355,7 @@ final class Promise
 
         if ($this === $target) {
             $this->_reject(
-                Exception\LogicException::circularResolution()
+                LogicException::circularResolution()
             );
             return;
         }
