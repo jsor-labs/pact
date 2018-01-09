@@ -44,9 +44,12 @@ class PromiseThenTest extends TestCase
      **/
     public function it_throws_for_invalid_fulfillment_callback($invalidCallable, $type)
     {
+        $class = new \ReflectionClass('Pact\Promise');
+        $method = $class->getMethod('then');
+
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/Argument 1 passed to Pact\\\\Promise\:\:then\(\) must be callable or null, ' . $type . ' given, called in .+ on line 81/'
+            '/' . preg_quote('Argument 1 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
         );
 
         $promise = Promise::resolve();
@@ -62,9 +65,12 @@ class PromiseThenTest extends TestCase
      **/
     public function it_throws_for_invalid_rejection_callback($invalidCallable, $type)
     {
+        $class = new \ReflectionClass('Pact\Promise');
+        $method = $class->getMethod('then');
+
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/Argument 2 passed to Pact\\\\Promise\:\:then\(\) must be callable or null, ' . $type . ' given, called in .+ on line 81/'
+            '/' . preg_quote('Argument 2 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
         );
 
         $promise = Promise::reject(new \Exception());

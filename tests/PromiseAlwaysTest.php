@@ -298,9 +298,12 @@ class PromiseAlwaysTest extends TestCase
      **/
     public function it_throws_for_invalid_callback_fulfilled_promise($invalidCallable, $type)
     {
+        $class = new \ReflectionClass('Pact\Promise');
+        $method = $class->getMethod('always');
+
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/Argument 1 passed to Pact\\\\Promise\:\:always\(\) must be callable, ' . $type . ' given, called in .+ on line 131/'
+            '/' . preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
         );
 
         $promise = Promise::resolve();
@@ -316,9 +319,12 @@ class PromiseAlwaysTest extends TestCase
      **/
     public function it_throws_for_invalid_callback_for_rejected_promise($invalidCallable, $type)
     {
+        $class = new \ReflectionClass('Pact\Promise');
+        $method = $class->getMethod('always');
+
         $this->setExpectedExceptionRegExp(
             '\TypeError',
-            '/Argument 1 passed to Pact\\\\Promise\:\:always\(\) must be callable, ' . $type . ' given, called in .+ on line 131/'
+            '/' . preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . $method->getFileName() . ' on line ' . $method->getStartLine(), '/') . '/'
         );
 
         $promise = Promise::reject(new \Exception());
