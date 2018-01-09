@@ -9,7 +9,8 @@ final class TypeError extends \TypeError
         $template,
         $method,
         $arg
-    ) {
+    )
+    {
         return self::create(
             $template,
             $method,
@@ -22,7 +23,8 @@ final class TypeError extends \TypeError
         $template,
         $method,
         $arg
-    ) {
+    )
+    {
         return self::create(
             $template,
             $method,
@@ -30,12 +32,13 @@ final class TypeError extends \TypeError
         );
     }
 
-    public static function create
+    private static function create
     (
         $template,
         $method,
         $argType
-    ) {
+    )
+    {
         $file = '(n/a)';
         $line = '(n/a)';
 
