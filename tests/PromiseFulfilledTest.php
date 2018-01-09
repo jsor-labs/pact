@@ -178,7 +178,6 @@ class PromiseFulfilledTest extends TestCase
 
     /**
      * @test
-     * @requires PHP 7
      */
     public function it_switches_to_rejection_when_fulfillment_callback_throws_an_error()
     {

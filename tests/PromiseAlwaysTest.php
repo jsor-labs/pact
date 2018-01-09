@@ -100,7 +100,6 @@ class PromiseAlwaysTest extends TestCase
 
     /**
      * @test
-     * @requires PHP 7
      */
     public function it_rejects_when_callback_throws_an_error_for_fulfilled_promise()
     {
@@ -245,7 +244,6 @@ class PromiseAlwaysTest extends TestCase
 
     /**
      * @test
-     * @requires PHP 7
      */
     public function it_rejects_when_callback_throws_an_error_for_rejected_promise()
     {
@@ -298,63 +296,35 @@ class PromiseAlwaysTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_ignores_non_callable_callback_and_triggers_php_warning_for_fulfilled_promise($invalidCallable, $type)
+    public function it_throws_for_invalid_callback_fulfilled_promise($invalidCallable, $type)
     {
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 1 passed to Pact\\\\Promise\:\:always\(\) must be callable, ' . $type . ' given, called in .+ on line 131/'
+        );
 
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo(1));
-
-        $promise = Promise::resolve(1);
+        $promise = Promise::resolve();
         $promise
             ->always(
                 $invalidCallable
-            )
-            ->then(
-                $mock,
-                $this->expectCallableNever()
             );
-
-        $errors = $errorCollector->stop();
-
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onSettled argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 
     /**
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_ignores_non_callable_callback_and_triggers_php_warning_for_rejected_promise($invalidCallable, $type)
+    public function it_throws_for_invalid_callback_for_rejected_promise($invalidCallable, $type)
     {
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 1 passed to Pact\\\\Promise\:\:always\(\) must be callable, ' . $type . ' given, called in .+ on line 131/'
+        );
 
-        $exception = new \Exception();
-
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($exception));
-
-        $promise = Promise::reject($exception);
+        $promise = Promise::reject(new \Exception());
         $promise
             ->always(
                 $invalidCallable
-            )
-            ->then(
-                $this->expectCallableNever(),
-                $mock
             );
-
-        $errors = $errorCollector->stop();
-
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onSettled argument passed to always() must be callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 }

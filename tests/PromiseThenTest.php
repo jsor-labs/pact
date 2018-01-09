@@ -42,64 +42,36 @@ class PromiseThenTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_ignores_non_callable_fulfillment_callback_and_triggers_php_warning($invalidCallable, $type)
+    public function it_throws_for_invalid_fulfillment_callback($invalidCallable, $type)
     {
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 1 passed to Pact\\\\Promise\:\:then\(\) must be callable or null, ' . $type . ' given, called in .+ on line 81/'
+        );
 
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo(1));
-
-        $promise = Promise::resolve(1);
+        $promise = Promise::resolve();
         $promise
             ->then(
                 $invalidCallable
-            )
-            ->then(
-                $mock,
-                $this->expectCallableNever()
             );
-
-        $errors = $errorCollector->stop();
-
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onFulfilled argument passed to then() must be null or callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 
     /**
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_ignores_non_callable_rejection_callback_and_triggers_php_warning($invalidCallable, $type)
+    public function it_throws_for_invalid_rejection_callback($invalidCallable, $type)
     {
-        $errorCollector = new ErrorCollector();
-        $errorCollector->start();
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 2 passed to Pact\\\\Promise\:\:then\(\) must be callable or null, ' . $type . ' given, called in .+ on line 81/'
+        );
 
-        $exception = new \Exception();
-
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->identicalTo($exception));
-
-        $promise = Promise::reject($exception);
+        $promise = Promise::reject(new \Exception());
         $promise
             ->then(
                 null,
                 $invalidCallable
-            )
-            ->then(
-                $this->expectCallableNever(),
-                $mock
             );
-
-        $errors = $errorCollector->stop();
-
-        $this->assertEquals(E_USER_WARNING, $errors[0]['errno']);
-        $this->assertContains('The $onRejected argument passed to then() must be null or callable, ' . $type . ' given.', $errors[0]['errstr']);
     }
 }

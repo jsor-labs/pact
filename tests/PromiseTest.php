@@ -13,20 +13,30 @@ class PromiseTest extends TestCase
 
     /**
      * @test
-     * @expectedException Pact\Exception\InvalidArgumentException
+     * @dataProvider invalidCallbackDataProvider
      */
-    public function it_throws_when_resolver_is_not_a_callable()
+    public function it_throws_for_invalid_resolver($invalidCallable, $type)
     {
-        new Promise(false);
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 1 passed to Pact\\\\Promise\:\:__construct\(\) must be callable or null, ' . $type . ' given, called in .+ on line 28/'
+        );
+
+        new Promise($invalidCallable);
     }
 
     /**
      * @test
-     * @expectedException Pact\Exception\InvalidArgumentException
+     * @dataProvider invalidCallbackDataProvider
      */
-    public function it_throws_when_canceller_is_not_a_callable()
+    public function it_throws_for_invalid_canceller($invalidCallable, $type)
     {
-        new Promise(null, false);
+        $this->setExpectedExceptionRegExp(
+            '\TypeError',
+            '/Argument 2 passed to Pact\\\\Promise\:\:__construct\(\) must be callable or null, ' . $type . ' given, called in .+ on line 28/'
+        );
+
+        new Promise(null, $invalidCallable);
     }
 
     /** @test */

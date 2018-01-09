@@ -6,6 +6,50 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
+    public function setExpectedException($exceptionName, $exceptionMessage = '', $exceptionCode = null)
+    {
+        if (!method_exists($this, 'expectException')) {
+            parent::setExpectedException(
+                $exceptionName,
+                $exceptionMessage,
+                $exceptionCode
+            );
+            return;
+        }
+
+        $this->expectException($exceptionName);
+
+        if ('' !== $exceptionMessage) {
+            $this->expectExceptionMessage($exceptionMessage);
+        }
+
+        if (null !== $exceptionCode) {
+            $this->expectExceptionCode($exceptionCode);
+        }
+    }
+
+    public function setExpectedExceptionRegExp($exceptionName, $exceptionMessageRegExp = '', $exceptionCode = null)
+    {
+        if (!method_exists($this, 'expectExceptionRegExp')) {
+            parent::setExpectedExceptionRegExp(
+                $exceptionName,
+                $exceptionMessageRegExp,
+                $exceptionCode
+            );
+            return;
+        }
+
+        $this->expectException($exceptionName);
+
+        if ('' !== $exceptionMessageRegExp) {
+            $this->expectExceptionMessageRegExp($exceptionMessageRegExp);
+        }
+
+        if (null !== $exceptionCode) {
+            $this->expectExceptionCode($exceptionCode);
+        }
+    }
+
     public function expectCallableExactly($amount)
     {
         $mock = $this->createCallableMock();
@@ -47,7 +91,7 @@ abstract class TestCase extends BaseTestCase
     {
         return array(
             'empty string' => array('', 'string'),
-            'object'       => array(new \stdClass, 'stdClass'),
+            'object'       => array(new \stdClass, 'object'),
             'array'        => array(array(), 'array'),
             'true'         => array(true, 'boolean'),
             'false'        => array(false, 'boolean'),

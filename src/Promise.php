@@ -28,14 +28,26 @@ final class Promise
     public function __construct($resolver = null, $canceller = null)
     {
         if (null !== $resolver && !\is_callable($resolver)) {
-            throw Exception\InvalidArgumentException::invalidResolver(
-                $resolver
+            throw new \TypeError(
+                sprintf(
+                    'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %d',
+                    __METHOD__,
+                    \gettype($resolver),
+                    __FILE__,
+                    __LINE__ - 9
+                )
             );
         }
 
         if (null !== $canceller && !\is_callable($canceller)) {
-            throw Exception\InvalidArgumentException::invalidCanceller(
-                $resolver
+            throw new \TypeError(
+                sprintf(
+                    'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %d',
+                    __METHOD__,
+                    \gettype($canceller),
+                    __FILE__,
+                    __LINE__ - 21
+                )
             );
         }
 
@@ -69,17 +81,25 @@ final class Promise
     public function then($onFulfilled = null, $onRejected = null)
     {
         if (null !== $onFulfilled && !is_callable($onFulfilled)) {
-            ErrorHandler::warning(
-                Exception\InvalidArgumentException::invalidThenFulfillmentCallback(
-                    $onFulfilled
+            throw new \TypeError(
+                sprintf(
+                    'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %d',
+                    __METHOD__,
+                    \gettype($onFulfilled),
+                    __FILE__,
+                    __LINE__ - 9
                 )
             );
         }
 
         if (null !== $onRejected && !is_callable($onRejected)) {
-            ErrorHandler::warning(
-                Exception\InvalidArgumentException::invalidThenRejectionCallback(
-                    $onRejected
+            throw new \TypeError(
+                sprintf(
+                    'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %d',
+                    __METHOD__,
+                    \gettype($onRejected),
+                    __FILE__,
+                    __LINE__ - 21
                 )
             );
         }
@@ -111,13 +131,15 @@ final class Promise
     public function always($onSettled)
     {
         if (!is_callable($onSettled)) {
-            ErrorHandler::warning(
-                Exception\InvalidArgumentException::invalidAlwaysCallback(
-                    $onSettled
+            throw new \TypeError(
+                sprintf(
+                    'Argument 1 passed to %s() must be callable, %s given, called in %s on line %d',
+                    __METHOD__,
+                    \gettype($onSettled),
+                    __FILE__,
+                    __LINE__ - 9
                 )
             );
-
-            return $this;
         }
 
         return $this->then(
