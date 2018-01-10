@@ -5,28 +5,52 @@ namespace Pact;
 final class ReasonException extends \RuntimeException
 {
     private $reason;
+    private $hasReason = false;
 
-    public function __construct($reason)
+    public static function createWithoutReason()
     {
-        $this->reason = $reason;
+        return new self('Promise rejected without a reason.');
+    }
 
-        $message = 'Promise rejected with ';
+    public static function createForReason($reason)
+    {
+        $message = 'Promise rejected with reason %s.';
 
         if (\is_bool($reason)) {
-            $message .= $reason ? '<TRUE>' : '<FALSE>';
+            $value = $reason ? '<TRUE>' : '<FALSE>';
         } elseif (\is_array($reason)) {
-            $message .= '<ARRAY>';
-        } elseif (\is_object($reason) && !method_exists($reason, '__toString')) {
-            $message .= \get_class($reason);
+            $value = '<ARRAY>';
+        } elseif (\is_object($reason) && !\method_exists($reason, '__toString')) {
+            $value = \get_class($reason);
         } elseif (\is_resource($reason)) {
-            $message .= \get_resource_type($reason);
+            $value = \get_resource_type($reason);
         } elseif (null === $reason) {
-            $message .= '<NULL>';
+            $value = '<NULL>';
         } else {
-            $message .= (string) $reason;
+            $value = (string) $reason;
         }
 
+        $exception = new self(
+            sprintf($message, $value)
+        );
+
+        $exception->reason = $reason;
+        $exception->hasReason = true;
+
+        return $exception;
+    }
+
+    /**
+     * @internal
+     */
+    public function __construct($message)
+    {
         parent::__construct($message);
+    }
+
+    public function hasReason()
+    {
+        return $this->hasReason;
     }
 
     public function getReason()

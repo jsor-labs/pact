@@ -165,8 +165,9 @@ class PromiseRejectTest extends TestCase
             ->then(null, function ($e) use ($that, $invalidReason, $type, $repr) {
                 $that->assertInstanceOf('Pact\ReasonException', $e);
 
-                $that->assertEquals('Promise rejected with ' . $repr, $e->getMessage());
+                $that->assertEquals('Promise rejected with reason ' . $repr . '.', $e->getMessage());
 
+                $that->assertTrue($e->hasReason());
                 $that->assertSame($invalidReason, $e->getReason());
             })
             ->then(null, function ($e) use (&$failure) {
@@ -195,8 +196,9 @@ class PromiseRejectTest extends TestCase
             ->then(null, function ($e) use ($that) {
                 $that->assertInstanceOf('Pact\ReasonException', $e);
 
-                $that->assertEquals('Promise rejected with <NULL>', $e->getMessage());
+                $that->assertEquals('Promise rejected without a reason.', $e->getMessage());
 
+                $that->assertFalse($e->hasReason());
                 $that->assertNull($e->getReason());
             })
             ->then(null, function ($e) use (&$failure) {

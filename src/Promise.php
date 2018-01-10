@@ -450,8 +450,14 @@ final class Promise
                 // may allow arbitrary reason types or even rejecting without
                 // a reason.
                 function ($reason = null) use ($that) {
-                    if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-                        $reason = new ReasonException($reason);
+                    if (null === $reason) {
+                        if (0 === func_num_args()) {
+                            $reason = ReasonException::createWithoutReason();
+                        } else {
+                            $reason = ReasonException::createForReason(null);
+                        }
+                    } elseif (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
+                        $reason = ReasonException::createForReason($reason);
                     }
 
                     $that->_reject($reason);
