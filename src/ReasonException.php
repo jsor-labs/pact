@@ -2,7 +2,7 @@
 
 namespace Pact;
 
-class ReasonException extends \RuntimeException
+final class ReasonException extends \RuntimeException
 {
     private $reason;
 

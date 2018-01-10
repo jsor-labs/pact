@@ -2,7 +2,7 @@
 
 namespace Pact;
 
-class LogicException extends \LogicException
+final class LogicException extends \LogicException
 {
     public static function circularResolution()
     {
