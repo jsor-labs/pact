@@ -42,13 +42,13 @@ final class TypeError extends \TypeError
         $file = '(n/a)';
         $line = '(n/a)';
 
-        if (PHP_VERSION_ID >= 54000) {
+        if (\PHP_VERSION_ID >= 50400) {
             // Second parameter available since 5.4.0
-            $trace = \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+            $trace = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, 10);
         } else {
             // DEBUG_BACKTRACE_IGNORE_ARGS available since 5.3.6
             $trace = \defined('DEBUG_BACKTRACE_IGNORE_ARGS')
-                ? \debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS)
+                ? \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS)
                 : \debug_backtrace(false);
         }
 
