@@ -39,10 +39,6 @@ final class Assert
         $method,
         $arg
     ) {
-        if (!self::$enabled || !\assert_options(\ASSERT_ACTIVE)) {
-            return null;
-        }
-
         return self::createDescription(
             $message,
             $method,
