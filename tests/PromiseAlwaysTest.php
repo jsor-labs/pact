@@ -291,34 +291,4 @@ class PromiseAlwaysTest extends TestCase
 
         $reject($exception);
     }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     **/
-    public function it_throws_for_invalid_callback_fulfilled_promise($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . __FILE__ . ' on line 307', '/') . '/'
-        );
-
-        $promise = Promise::resolve();
-        $promise->always($invalidCallable);
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     **/
-    public function it_throws_for_invalid_callback_for_rejected_promise($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . __FILE__ . ' on line 322', '/') . '/'
-        );
-
-        $promise = Promise::reject(new \Exception());
-        $promise->always($invalidCallable);
-    }
 }

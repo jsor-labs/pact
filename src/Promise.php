@@ -28,23 +28,44 @@ final class Promise
     /**
      * @param callable|null $resolver
      * @param callable|null $canceller
-     * @throws TypeError
      */
     public function __construct($resolver = null, $canceller = null)
     {
-        if (null !== $resolver && !\is_callable($resolver)) {
-            throw TypeError::createForNonClassTypeHintArgument(
-                'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %s',
-                __METHOD__,
-                $resolver
+        if (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function ($resolver) {
+                    return null === $resolver || \is_callable($resolver);
+                }, $resolver),
+                ($desc = Assert::descriptionForTypeHintedArgument(
+                    'Argument 1 passed to Pact\Promise::__construct() must be callable or null',
+                    __METHOD__,
+                    $resolver
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function ($resolver) {
+                    return null === $resolver || \is_callable($resolver);
+                }, $resolver)
             );
         }
 
-        if (null !== $canceller && !\is_callable($canceller)) {
-            throw TypeError::createForNonClassTypeHintArgument(
-                'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %s',
-                __METHOD__,
-                $canceller
+        if (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function ($canceller) {
+                    return null === $canceller || \is_callable($canceller);
+                }, $canceller),
+                ($desc = Assert::descriptionForTypeHintedArgument(
+                    'Argument 2 passed to Pact\Promise::__construct() must be callable or null',
+                    __METHOD__,
+                    $canceller
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function ($canceller) {
+                    return null === $canceller || \is_callable($canceller);
+                }, $canceller)
             );
         }
 
@@ -74,23 +95,47 @@ final class Promise
     /**
      * @param \Exception|\Throwable $reason
      * @return Promise
-     * @throws TypeError
      */
     public static function reject($reason)
     {
-        if (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-            if (interface_exists('Throwable')) {
-                throw TypeError::createForClassTypeHintArgument(
-                    'Argument 1 passed to %s() must implement interface Throwable, %s given, called in %s on line %s',
+        if (\PHP_VERSION_ID >= 70000) {
+            \assert(
+                Assert::callback(function($reason) {
+                    return $reason instanceof \Throwable;
+                }, $reason),
+                ($desc = Assert::descriptionForClassTypeHintedArgument(
+                    'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable',
                     __METHOD__,
                     $reason
-                );
-            } else {
-                throw TypeError::createForClassTypeHintArgument(
-                    'Argument 1 passed to %s() must be an instance of Exception, %s given, called in %s on line %s',
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } elseif (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function($reason) {
+                    return $reason instanceof \Exception;
+                }, $reason),
+                ($desc = Assert::descriptionForClassTypeHintedArgument(
+                    'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
                     __METHOD__,
                     $reason
-                );
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function($reason) {
+                    return $reason instanceof \Exception;
+                }, $reason)
+            );
+        }
+
+        // Allow rejection with non-throwable reasons in case assertions are disabled
+        if (\PHP_VERSION_ID >= 70000) {
+            if (!$reason instanceof \Throwable) {
+                $reason = ReasonException::createForReason($reason);
+            }
+        } else {
+            if (!$reason instanceof \Exception) {
+                $reason = ReasonException::createForReason($reason);
             }
         }
 
@@ -104,23 +149,44 @@ final class Promise
      * @param callable|null $onFulfilled
      * @param callable|null $onRejected
      * @return Promise
-     * @throws TypeError
      */
     public function then($onFulfilled = null, $onRejected = null)
     {
-        if (null !== $onFulfilled && !is_callable($onFulfilled)) {
-            throw TypeError::createForNonClassTypeHintArgument(
-                'Argument 1 passed to %s() must be callable or null, %s given, called in %s on line %s',
-                __METHOD__,
-                $onFulfilled
+        if (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function ($onFulfilled) {
+                    return null === $onFulfilled || \is_callable($onFulfilled);
+                }, $onFulfilled),
+                ($desc = Assert::descriptionForTypeHintedArgument(
+                    'Argument 1 passed to Pact\Promise::then() must be callable or null',
+                    __METHOD__,
+                    $onFulfilled
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function ($onFulfilled) {
+                    return null === $onFulfilled || \is_callable($onFulfilled);
+                }, $onFulfilled)
             );
         }
 
-        if (null !== $onRejected && !is_callable($onRejected)) {
-            throw TypeError::createForNonClassTypeHintArgument(
-                'Argument 2 passed to %s() must be callable or null, %s given, called in %s on line %s',
-                __METHOD__,
-                $onRejected
+        if (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function ($onRejected) {
+                    return null === $onRejected || \is_callable($onRejected);
+                }, $onRejected),
+                ($desc = Assert::descriptionForTypeHintedArgument(
+                    'Argument 2 passed to Pact\Promise::then() must be callable or null',
+                    __METHOD__,
+                    $onRejected
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function ($onRejected) {
+                    return null === $onRejected || \is_callable($onRejected);
+                }, $onRejected)
             );
         }
 
@@ -151,25 +217,43 @@ final class Promise
     /**
      * @param callable $onSettled
      * @return Promise
-     * @throws TypeError
      */
     public function always($onSettled)
     {
-        if (!is_callable($onSettled)) {
-            throw TypeError::createForNonClassTypeHintArgument(
-                'Argument 1 passed to %s() must be callable, %s given, called in %s on line %s',
-                __METHOD__,
-                $onSettled
+        if (\PHP_VERSION_ID >= 50408) {
+            \assert(
+                Assert::callback(function ($onSettled) {
+                    return \is_callable($onSettled);
+                }, $onSettled),
+                ($desc = Assert::descriptionForTypeHintedArgument(
+                    'Argument 1 passed to Pact\Promise::always() must be callable',
+                    __METHOD__,
+                    $onSettled
+                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc
+            );
+        } else {
+            \assert(
+                Assert::callback(function ($onSettled) {
+                    return \is_callable($onSettled);
+                }, $onSettled)
             );
         }
 
         return $this->then(
             function ($value) use ($onSettled) {
+                if (!\is_callable($onSettled)) {
+                    return $value;
+                }
+
                 return Promise::resolve($onSettled())->then(function () use ($value) {
                     return $value;
                 });
             },
             function ($reason) use ($onSettled) {
+                if (!\is_callable($onSettled)) {
+                    return Promise::reject($reason);
+                }
+
                 return Promise::resolve($onSettled())->then(function () use ($reason) {
                     return Promise::reject($reason);
                 });
@@ -437,6 +521,10 @@ final class Promise
 
     private function _call($callback)
     {
+        if (!\is_callable($callback)) {
+            return;
+        }
+
         $that = $this;
 
         try {
@@ -445,7 +533,7 @@ final class Promise
                 function ($value = null) use ($that) {
                     $that->_resolve($value);
                 },
-                // Allow rejection with non-throwable reasons to ensure
+                // Allow rejecting with non-throwable reasons to ensure
                 // interoperability with foreign promise implementations which
                 // may allow arbitrary reason types or even rejecting without
                 // a reason.

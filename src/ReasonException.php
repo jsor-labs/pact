@@ -2,7 +2,7 @@
 
 namespace Pact;
 
-final class ReasonException extends \RuntimeException
+final class ReasonException extends \RuntimeException implements PactThrowable
 {
     private $reason;
     private $hasReason = false;

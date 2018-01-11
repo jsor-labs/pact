@@ -13,34 +13,6 @@ class PromiseTest extends TestCase
         new Promise();
     }
 
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     */
-    public function it_throws_for_invalid_resolver($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 27', '/') . '/'
-        );
-
-        new Promise($invalidCallable);
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     */
-    public function it_throws_for_invalid_canceller($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 41', '/') . '/'
-        );
-
-        new Promise(null, $invalidCallable);
-    }
-
     /** @test */
     public function it_supports_deep_nested_promise_chains()
     {

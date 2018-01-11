@@ -1,5 +1,7 @@
 language: php
 
+dist: trusty
+
 php:
   - 5.4
   - 5.5
@@ -10,12 +12,18 @@ php:
   - nightly
   - hhvm
 
-dist: trusty
-
 matrix:
   include:
     - php: 5.3
       dist: precise
+    - php: 7.0
+      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+    - php: 7.1
+      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+    - php: 7.2
+      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+    - php: nightly
+      env: PACT_DISABLE_ZEND_ASSERTIONS=true
   allow_failures:
     - php: nightly
     - php: hhvm
@@ -24,4 +32,5 @@ install:
   - composer install
 
 script:
-  - ./vendor/bin/phpunit -v --coverage-text
+  - if [ -z "$PACT_DISABLE_ZEND_ASSERTIONS" ]; then php -dzend.assertions=1 ./vendor/bin/phpunit -v --coverage-text; fi
+  - if [ "$PACT_DISABLE_ZEND_ASSERTIONS" = "true" ]; then php -dzend.assertions=0 ./vendor/bin/phpunit -v --coverage-text; fi

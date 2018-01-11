@@ -32,39 +32,8 @@ class PromiseThenTest extends TestCase
     /** @test */
     public function it_allows_null_for_callback_parameters_for_pending_promise()
     {
-        $promise = new Promise(function () {
-        });
+        $promise = new Promise(function () {});
 
         $this->assertInstanceOf('Pact\Promise', $promise->then(null, null));
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     **/
-    public function it_throws_for_invalid_fulfillment_callback($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 1 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 53', '/') . '/'
-        );
-
-        $promise = Promise::resolve();
-        $promise->then($invalidCallable);
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     **/
-    public function it_throws_for_invalid_rejection_callback($invalidCallable, $type)
-    {
-        $this->setExpectedExceptionRegExp(
-            '\TypeError',
-            '/' . preg_quote('Argument 2 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line 68', '/') . '/'
-        );
-
-        $promise = Promise::reject(new \Exception());
-        $promise->then(null, $invalidCallable);
     }
 }
