@@ -14,8 +14,6 @@ final class ReasonException extends \RuntimeException implements PactThrowable
 
     public static function createForReason($reason)
     {
-        $message = 'Promise rejected with reason %s.';
-
         if (\is_bool($reason)) {
             $value = $reason ? '<TRUE>' : '<FALSE>';
         } elseif (\is_array($reason)) {
@@ -30,9 +28,7 @@ final class ReasonException extends \RuntimeException implements PactThrowable
             $value = (string) $reason;
         }
 
-        $exception = new self(
-            \sprintf($message, $value)
-        );
+        $exception = new self("Promise rejected with reason $value.");
 
         $exception->reason = $reason;
         $exception->hasReason = true;
