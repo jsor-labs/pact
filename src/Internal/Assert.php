@@ -1,36 +1,9 @@
 <?php
 
-namespace Pact;
+namespace Pact\Internal;
 
 final class Assert
 {
-    private static $enabled = true;
-
-    public static function enable()
-    {
-        self::$enabled = true;
-    }
-
-    public static function disable()
-    {
-        self::$enabled = false;
-    }
-
-    /**
-     * @internal
-     */
-    public static function callback($callback)
-    {
-        if (!self::$enabled || !\assert_options(\ASSERT_ACTIVE)) {
-            return true;
-        }
-
-        $parameters = \func_get_args();
-        \array_shift($parameters);
-
-        return true === \call_user_func_array($callback, $parameters);
-    }
-
     /**
      * @internal
      */

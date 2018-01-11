@@ -2,6 +2,9 @@
 
 namespace Pact;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class AssertInactiveTest extends TestCase
 {
     private $assertActive;
@@ -25,8 +28,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidCallbackDataProvider
+     * @doesNotPerformAssertions
      */
     public function it_throws_from_constructor_for_invalid_resolver($invalidCallable, $type)
     {
@@ -35,8 +38,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidCallbackDataProvider
+     * @doesNotPerformAssertions
      */
     public function it_throws_from_constructor_for_invalid_canceller($invalidCallable, $type)
     {
@@ -45,8 +48,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidReasonProvider
+     * @doesNotPerformAssertions
      **/
     public function it_throws_from_reject_for_invalid_rejection_reason($invalidReason, $type)
     {
@@ -55,8 +58,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidCallbackDataProvider
+     * @doesNotPerformAssertions
      **/
     public function it_throws_from_then_for_invalid_fulfillment_callback($invalidCallable, $type)
     {
@@ -66,8 +69,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidCallbackDataProvider
+     * @doesNotPerformAssertions
      **/
     public function it_throws_from_then_for_invalid_rejection_callback($invalidCallable, $type)
     {
@@ -77,8 +80,8 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @doesNotPerformAssertions
      * @dataProvider invalidCallbackDataProvider
+     * @doesNotPerformAssertions
      **/
     public function it_throws_from_always_for_invalid_callback($invalidCallable, $type)
     {

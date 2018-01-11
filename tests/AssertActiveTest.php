@@ -10,8 +10,8 @@ class AssertActiveTest extends TestCase
 
     public function setUp()
     {
-        if (\PHP_VERSION_ID >= 70000 && !\ini_get('zend.assertions')) {
-            $this->markTestSkipped('Assertions disabled with zend.assertions=0, run with `php -dzend.assertions=1 vendor/bin/phpunit`.');
+        if (\PHP_VERSION_ID >= 70000 && \ini_get('zend.assertions') < 1) {
+            $this->markTestSkipped('Assertions disabled with zend.assertions=' . \ini_get('zend.assertions'));
         }
 
         $this->assertActive = \assert_options(ASSERT_ACTIVE, 1);
@@ -68,6 +68,18 @@ class AssertActiveTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_constructor_for_valid_resolver()
+    {
+        new Promise(function () {});
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
+    }
+
+    /**
+     * @test
      * @dataProvider invalidCallbackDataProvider
      */
     public function it_throws_from_constructor_for_invalid_canceller($invalidCallable, $type)
@@ -98,6 +110,18 @@ class AssertActiveTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_constructor_for_valid_canceller()
+    {
+        new Promise(null, function () {});
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
+    }
+
+    /**
+     * @test
      * @dataProvider invalidReasonProvider
      **/
     public function it_throws_from_reject_for_invalid_rejection_reason($invalidReason, $type)
@@ -124,6 +148,18 @@ class AssertActiveTest extends TestCase
             '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_reject_for_valid_rejection_reason()
+    {
+        Promise::reject(new \Exception());
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
     }
 
     /**
@@ -159,6 +195,19 @@ class AssertActiveTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_then_for_valid_fulfillment_callback()
+    {
+        $promise = Promise::resolve();
+        $promise->then(function () {});
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
+    }
+
+    /**
+     * @test
      * @dataProvider invalidCallbackDataProvider
      **/
     public function it_throws_from_then_for_invalid_rejection_callback($invalidCallable, $type)
@@ -190,6 +239,19 @@ class AssertActiveTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_then_for_valid_rejection_callback()
+    {
+        $promise = Promise::reject(new \Exception());
+        $promise->then(null, function () {});
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
+    }
+
+    /**
+     * @test
      * @dataProvider invalidCallbackDataProvider
      **/
     public function it_throws_from_always_for_invalid_callback($invalidCallable, $type)
@@ -217,5 +279,18 @@ class AssertActiveTest extends TestCase
             '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function it_does_not_call_internal_assert_class_from_always_for_valid_callback()
+    {
+        $promise = Promise::resolve();
+        $promise->always(function () {});
+
+        $this->assertFalse(\class_exists('Pact\Internal\Assert', false), 'Pact\Internal\Assert must not be loaded');
     }
 }

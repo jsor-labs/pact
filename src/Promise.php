@@ -33,10 +33,8 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($resolver) {
-                    return null === $resolver || \is_callable($resolver);
-                }, $resolver)),
-                $assertion ? null : (($desc = Assert::descriptionForTypeHintedArgument(
+                $assertion = null === $resolver || \is_callable($resolver),
+                $assertion ? null : (($desc = Internal\Assert::descriptionForTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::__construct() must be callable or null',
                     __METHOD__,
                     $resolver
@@ -44,18 +42,14 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($resolver) {
-                    return null === $resolver || \is_callable($resolver);
-                }, $resolver)
+                null === $resolver || \is_callable($resolver)
             );
         }
 
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($canceller) {
-                    return null === $canceller || \is_callable($canceller);
-                }, $canceller)),
-                $assertion ? null : (($desc = Assert::descriptionForTypeHintedArgument(
+                $assertion = null === $canceller || \is_callable($canceller),
+                $assertion ? null : (($desc = Internal\Assert::descriptionForTypeHintedArgument(
                     'Argument 2 passed to Pact\Promise::__construct() must be callable or null',
                     __METHOD__,
                     $canceller
@@ -63,9 +57,7 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($canceller) {
-                    return null === $canceller || \is_callable($canceller);
-                }, $canceller)
+                null === $canceller || \is_callable($canceller)
             );
         }
 
@@ -100,10 +92,8 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 70000) {
             \assert(
-                ($assertion = Assert::callback(function ($reason) {
-                    return $reason instanceof \Throwable;
-                }, $reason)),
-                $assertion ? null : (($desc = Assert::descriptionForClassTypeHintedArgument(
+                $assertion = $reason instanceof \Throwable,
+                $assertion ? null : (($desc = Internal\Assert::descriptionForClassTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable',
                     __METHOD__,
                     $reason
@@ -111,10 +101,8 @@ final class Promise
             );
         } elseif (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($reason) {
-                    return $reason instanceof \Exception;
-                }, $reason)),
-                $assertion ? null : (($desc = Assert::descriptionForClassTypeHintedArgument(
+                $assertion = $reason instanceof \Exception,
+                $assertion ? null : (($desc = Internal\Assert::descriptionForClassTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
                     __METHOD__,
                     $reason
@@ -122,9 +110,7 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($reason) {
-                    return $reason instanceof \Exception;
-                }, $reason)
+                $reason instanceof \Exception
             );
         }
 
@@ -154,10 +140,8 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($onFulfilled) {
-                    return null === $onFulfilled || \is_callable($onFulfilled);
-                }, $onFulfilled)),
-                $assertion ? null : (($desc = Assert::descriptionForTypeHintedArgument(
+                $assertion = null === $onFulfilled || \is_callable($onFulfilled),
+                $assertion ? null : (($desc = Internal\Assert::descriptionForTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
                     $onFulfilled
@@ -165,18 +149,14 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($onFulfilled) {
-                    return null === $onFulfilled || \is_callable($onFulfilled);
-                }, $onFulfilled)
+                null === $onFulfilled || \is_callable($onFulfilled)
             );
         }
 
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($onRejected) {
-                    return null === $onRejected || \is_callable($onRejected);
-                }, $onRejected)),
-                $assertion ? null : (($desc = Assert::descriptionForTypeHintedArgument(
+                $assertion = null === $onRejected || \is_callable($onRejected),
+                $assertion ? null : (($desc = Internal\Assert::descriptionForTypeHintedArgument(
                     'Argument 2 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
                     $onRejected
@@ -184,9 +164,7 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($onRejected) {
-                    return null === $onRejected || \is_callable($onRejected);
-                }, $onRejected)
+                null === $onRejected || \is_callable($onRejected)
             );
         }
 
@@ -222,10 +200,8 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                ($assertion = Assert::callback(function ($onSettled) {
-                    return \is_callable($onSettled);
-                }, $onSettled)),
-                $assertion ? null : (($desc = Assert::descriptionForTypeHintedArgument(
+                $assertion = \is_callable($onSettled),
+                $assertion ? null : (($desc = Internal\Assert::descriptionForTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::always() must be callable',
                     __METHOD__,
                     $onSettled
@@ -233,9 +209,7 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function ($onSettled) {
-                    return \is_callable($onSettled);
-                }, $onSettled)
+                \is_callable($onSettled)
             );
         }
 

@@ -12,8 +12,8 @@ class AssertActiveExceptionTest extends TestCase
 
     public function setUp()
     {
-        if (\PHP_VERSION_ID >= 70000 && !\ini_get('zend.assertions')) {
-            $this->markTestSkipped('Assertions disabled with zend.assertions=0, run with `php -dzend.assertions=1 vendor/bin/phpunit`.');
+        if (\PHP_VERSION_ID >= 70000 && \ini_get('zend.assertions') < 1) {
+            $this->markTestSkipped('Assertions disabled with zend.assertions=' . \ini_get('zend.assertions'));
         }
 
         $this->assertActive = \assert_options(ASSERT_ACTIVE, 1);

@@ -17,13 +17,21 @@ matrix:
     - php: 5.3
       dist: precise
     - php: 7.0
-      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+      env: PACT_ZEND_ASSERTIONS=0
+    - php: 7.0
+      env: PACT_ZEND_ASSERTIONS=-1
     - php: 7.1
-      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+      env: PACT_ZEND_ASSERTIONS=0
+    - php: 7.1
+      env: PACT_ZEND_ASSERTIONS=-1
     - php: 7.2
-      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+      env: PACT_ZEND_ASSERTIONS=0
+    - php: 7.2
+      env: PACT_ZEND_ASSERTIONS=-1
     - php: nightly
-      env: PACT_DISABLE_ZEND_ASSERTIONS=true
+      env: PACT_ZEND_ASSERTIONS=0
+    - php: nightly
+      env: PACT_ZEND_ASSERTIONS=-1
   allow_failures:
     - php: nightly
     - php: hhvm
@@ -31,6 +39,9 @@ matrix:
 install:
   - composer install
 
+before_script:
+  - if [ "$PACT_ZEND_ASSERTIONS" = "0" ]; then echo "zend.assertions = 0" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+  - if [ "$PACT_ZEND_ASSERTIONS" = "-1" ]; then echo "zend.assertions = -1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+
 script:
-  - if [ -z "$PACT_DISABLE_ZEND_ASSERTIONS" ]; then php -dzend.assertions=1 ./vendor/bin/phpunit -v --coverage-text; fi
-  - if [ "$PACT_DISABLE_ZEND_ASSERTIONS" = "true" ]; then php -dzend.assertions=0 ./vendor/bin/phpunit -v --coverage-text; fi
+  - ./vendor/bin/phpunit -v --coverage-text
