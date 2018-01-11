@@ -8,7 +8,7 @@ abstract class TestCase extends BaseTestCase
 {
     public function setExpectedException($exceptionName, $exceptionMessage = '', $exceptionCode = null)
     {
-        if (!method_exists($this, 'expectException')) {
+        if (!\method_exists($this, 'expectException')) {
             parent::setExpectedException(
                 $exceptionName,
                 $exceptionMessage,
@@ -30,7 +30,7 @@ abstract class TestCase extends BaseTestCase
 
     public function setExpectedExceptionRegExp($exceptionName, $exceptionMessageRegExp = '', $exceptionCode = null)
     {
-        if (!method_exists($this, 'expectExceptionMessageRegExp')) {
+        if (!\method_exists($this, 'expectExceptionMessageRegExp')) {
             parent::setExpectedExceptionRegExp(
                 $exceptionName,
                 $exceptionMessageRegExp,
@@ -111,7 +111,7 @@ abstract class TestCase extends BaseTestCase
             'false'        => array(false, 'boolean', '<FALSE>'),
             'integer'      => array(1, 'integer', '1'),
             'float'        => array(1.1, 'double', '1.1'),
-            'resource'     => array(fopen('php://temp', 'r'), 'resource', 'stream'),
+            'resource'     => array(\fopen('php://temp', 'r'), 'resource', 'stream'),
             'null'        => array(null, 'null', '<NULL>'),
         );
     }

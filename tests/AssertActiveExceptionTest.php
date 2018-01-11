@@ -38,7 +38,7 @@ class AssertActiveExceptionTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             'Pact\TypeError',
-            '/^' . preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 3), '/') . '/'
+            '/^' . \preg_quote('Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 3), '/') . '/'
         );
 
         new Promise($invalidCallable);
@@ -52,7 +52,7 @@ class AssertActiveExceptionTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             'Pact\TypeError',
-            '/^' . preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 3), '/') . '/'
+            '/^' . \preg_quote('Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 3), '/') . '/'
         );
 
         new Promise(null, $invalidCallable);
@@ -65,9 +65,9 @@ class AssertActiveExceptionTest extends TestCase
     public function it_throws_from_reject_for_invalid_rejection_reason($invalidReason, $type)
     {
         if (PHP_VERSION_ID < 70000) {
-            $regexp = '/^' . preg_quote('Argument 1 passed to Pact\Promise::reject() must be an instance of Exception, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 10), '/') . '/';
+            $regexp = '/^' . \preg_quote('Argument 1 passed to Pact\Promise::reject() must be an instance of Exception, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 10), '/') . '/';
         } else {
-            $regexp = '/^' . preg_quote('Argument 1 passed to Pact\Promise::reject() must implement interface Throwable, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 8), '/') . '/';
+            $regexp = '/^' . \preg_quote('Argument 1 passed to Pact\Promise::reject() must implement interface Throwable, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 8), '/') . '/';
         }
 
         $this->setExpectedExceptionRegExp(
@@ -86,7 +86,7 @@ class AssertActiveExceptionTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             'Pact\TypeError',
-            '/^' . preg_quote('Argument 1 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
+            '/^' . \preg_quote('Argument 1 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
         );
 
         $promise = Promise::resolve();
@@ -101,7 +101,7 @@ class AssertActiveExceptionTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             'Pact\TypeError',
-            '/^' . preg_quote('Argument 2 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
+            '/^' . \preg_quote('Argument 2 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
         );
 
         $promise = Promise::reject(new \Exception());
@@ -116,7 +116,7 @@ class AssertActiveExceptionTest extends TestCase
     {
         $this->setExpectedExceptionRegExp(
             'Pact\TypeError',
-            '/^' . preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
+            '/^' . \preg_quote('Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 4), '/') . '/'
         );
 
         $promise = Promise::resolve();

@@ -100,7 +100,7 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 70000) {
             \assert(
-                Assert::callback(function($reason) {
+                Assert::callback(function ($reason) {
                     return $reason instanceof \Throwable;
                 }, $reason),
                 ($desc = Assert::descriptionForClassTypeHintedArgument(
@@ -111,7 +111,7 @@ final class Promise
             );
         } elseif (\PHP_VERSION_ID >= 50408) {
             \assert(
-                Assert::callback(function($reason) {
+                Assert::callback(function ($reason) {
                     return $reason instanceof \Exception;
                 }, $reason),
                 ($desc = Assert::descriptionForClassTypeHintedArgument(
@@ -122,7 +122,7 @@ final class Promise
             );
         } else {
             \assert(
-                Assert::callback(function($reason) {
+                Assert::callback(function ($reason) {
                     return $reason instanceof \Exception;
                 }, $reason)
             );
@@ -369,8 +369,7 @@ final class Promise
         Promise $child,
         $onFulfilled = null,
         $onRejected = null
-    )
-    {
+    ) {
         $parent = $this->_target();
 
         if (Promise::STATE_PENDING === $parent->state) {
@@ -539,7 +538,7 @@ final class Promise
                 // a reason.
                 function ($reason = null) use ($that) {
                     if (null === $reason) {
-                        if (0 === func_num_args()) {
+                        if (0 === \func_num_args()) {
                             $reason = ReasonException::createWithoutReason();
                         } else {
                             $reason = ReasonException::createForReason(null);

@@ -25,7 +25,7 @@ class AssertZendInactiveTest extends TestCase
     {
         new Promise($invalidCallable);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 
     /**
@@ -36,7 +36,7 @@ class AssertZendInactiveTest extends TestCase
     {
         new Promise(null, $invalidCallable);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 
     /**
@@ -47,7 +47,7 @@ class AssertZendInactiveTest extends TestCase
     {
         Promise::reject($invalidReason);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 
     /**
@@ -59,7 +59,7 @@ class AssertZendInactiveTest extends TestCase
         $promise = Promise::resolve();
         $promise->then($invalidCallable);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 
     /**
@@ -71,7 +71,7 @@ class AssertZendInactiveTest extends TestCase
         $promise = Promise::reject(new \Exception());
         $promise->then(null, $invalidCallable);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 
     /**
@@ -83,6 +83,6 @@ class AssertZendInactiveTest extends TestCase
         $promise = Promise::resolve();
         $promise->always($invalidCallable);
 
-        $this->assertFalse(class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
+        $this->assertFalse(\class_exists('Pact\Assert', false), 'Pact\Assert must not be loaded');
     }
 }

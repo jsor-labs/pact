@@ -31,7 +31,7 @@ final class ReasonException extends \RuntimeException implements PactThrowable
         }
 
         $exception = new self(
-            sprintf($message, $value)
+            \sprintf($message, $value)
         );
 
         $exception->reason = $reason;

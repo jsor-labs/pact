@@ -61,7 +61,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }
@@ -91,7 +91,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }
@@ -121,7 +121,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }
@@ -152,7 +152,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }
@@ -183,7 +183,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }
@@ -214,7 +214,7 @@ class AssertActiveTest extends TestCase
 
         $this->assertEquals(E_WARNING, $errors[0]['errno']);
         $this->assertRegExp(
-            '/^' . preg_quote('assert(): ' . $description, '/') . '/',
+            '/^' . \preg_quote('assert(): ' . $description, '/') . '/',
             $errors[0]['errstr']
         );
     }

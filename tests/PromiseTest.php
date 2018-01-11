@@ -40,13 +40,13 @@ class PromiseTest extends TestCase
         $p = null;
         foreach ($deferreds as $d) {
             if ($p) {
-                call_user_func($d['resolve'], $p);
+                \call_user_func($d['resolve'], $p);
             }
 
             $p = $d['promise'];
         }
 
-        call_user_func($deferreds[0]['resolve'], true);
+        \call_user_func($deferreds[0]['resolve'], true);
 
         $mock = $this->createCallableMock();
         $mock

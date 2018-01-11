@@ -25,8 +25,8 @@ final class Assert
             return true;
         }
 
-        $parameters = func_get_args();
-        array_shift($parameters);
+        $parameters = \func_get_args();
+        \array_shift($parameters);
 
         return true === \call_user_func_array($callback, $parameters);
     }
@@ -38,8 +38,7 @@ final class Assert
         $message,
         $method,
         $arg
-    )
-    {
+    ) {
         if (!self::$enabled || !\assert_options(\ASSERT_ACTIVE)) {
             return null;
         }
@@ -54,13 +53,11 @@ final class Assert
     /**
      * @internal
      */
-    public static function descriptionForClassTypeHintedArgument
-    (
+    public static function descriptionForClassTypeHintedArgument(
         $message,
         $method,
         $arg
-    )
-    {
+    ) {
         return self::createDescription(
             $message,
             $method,
@@ -68,13 +65,11 @@ final class Assert
         );
     }
 
-    private static function createDescription
-    (
+    private static function createDescription(
         $message,
         $method,
         $argType
-    )
-    {
+    ) {
         $description = "$message, $argType given";
 
         $file = null;
@@ -124,7 +119,7 @@ final class Assert
                 $lineDesc = " on line $line";
             }
 
-             $description = "$description, called$fileDesc$lineDesc";
+            $description = "$description, called$fileDesc$lineDesc";
         }
 
         return $description;

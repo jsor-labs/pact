@@ -86,7 +86,7 @@ class PromiseInspectionTest extends TestCase
         $this->assertFalse($promise->isCancelled());
     }
 
-    /** 
+    /**
      * @test
      * @expectedException Pact\LogicException
      * @expectedExceptionMessage Cannot get the fulfillment value of a non-fulfilled promise.
