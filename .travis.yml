@@ -41,7 +41,9 @@ cache:
     - $HOME/.composer/cache/files
 
 install:
-  - composer remove friendsofphp/php-cs-fixer --dev --no-interaction # Remove to allow installation in nightly/7.3
+  # Remove, because friendsofphp/php-cs-fixer can't be installed on nightly/7.3
+  # and it installs polyfills for \Error
+  - composer remove friendsofphp/php-cs-fixer --dev --no-interaction
   - composer install --no-interaction
 
 before_script:

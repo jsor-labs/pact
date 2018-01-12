@@ -24,6 +24,7 @@ class FunctionRejectTest extends TestCase
 
     /**
      * @test
+     * @requires PHP 7
      */
     public function it_rejects_an_error()
     {

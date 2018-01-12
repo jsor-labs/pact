@@ -167,6 +167,7 @@ class PromiseRejectedTest extends TestCase
 
     /**
      * @test
+     * @requires PHP 7
      */
     public function it_propagates_rejection_when_rejection_handler_throws_an_error()
     {

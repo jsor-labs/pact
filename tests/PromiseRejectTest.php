@@ -27,6 +27,7 @@ class PromiseRejectTest extends TestCase
 
     /**
      * @test
+     * @requires PHP 7
      */
     public function it_rejects_when_resolver_throws_an_error()
     {

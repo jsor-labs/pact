@@ -100,6 +100,7 @@ class PromiseAlwaysTest extends TestCase
 
     /**
      * @test
+     * @requires PHP 7
      */
     public function it_rejects_when_callback_throws_an_error_for_fulfilled_promise()
     {
@@ -244,6 +245,7 @@ class PromiseAlwaysTest extends TestCase
 
     /**
      * @test
+     * @requires PHP 7
      */
     public function it_rejects_when_callback_throws_an_error_for_rejected_promise()
     {
