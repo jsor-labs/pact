@@ -15,10 +15,7 @@
     "autoload": {
         "psr-4": {
             "Pact\\": "src/"
-        },
-        "classmap": [
-            "stubs"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
