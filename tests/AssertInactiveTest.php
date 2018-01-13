@@ -2,9 +2,6 @@
 
 namespace Pact;
 
-/**
- * @runTestsInSeparateProcesses
- */
 class AssertInactiveTest extends TestCase
 {
     private $assertActive;
