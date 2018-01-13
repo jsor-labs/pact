@@ -31,7 +31,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidCallbackDataProvider
      * @doesNotPerformAssertions
      */
-    public function it_throws_from_constructor_for_invalid_resolver($invalidCallable, $type)
+    public function it_does_not_throw_from_constructor_for_invalid_resolver($invalidCallable, $type)
     {
         new Promise($invalidCallable);
     }
@@ -41,7 +41,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidCallbackDataProvider
      * @doesNotPerformAssertions
      */
-    public function it_throws_from_constructor_for_invalid_canceller($invalidCallable, $type)
+    public function it_does_not_throw_from_constructor_for_invalid_canceller($invalidCallable, $type)
     {
         new Promise(null, $invalidCallable);
     }
@@ -51,7 +51,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidReasonProvider
      * @doesNotPerformAssertions
      **/
-    public function it_throws_from_reject_for_invalid_rejection_reason($invalidReason, $type)
+    public function it_does_not_throw_from_reject_for_invalid_rejection_reason($invalidReason, $type)
     {
         Promise::reject($invalidReason);
     }
@@ -61,7 +61,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidCallbackDataProvider
      * @doesNotPerformAssertions
      **/
-    public function it_throws_from_then_for_invalid_fulfillment_callback($invalidCallable, $type)
+    public function it_does_not_throw_from_then_for_invalid_fulfillment_callback($invalidCallable, $type)
     {
         $promise = Promise::resolve();
         $promise->then($invalidCallable);
@@ -72,7 +72,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidCallbackDataProvider
      * @doesNotPerformAssertions
      **/
-    public function it_throws_from_then_for_invalid_rejection_callback($invalidCallable, $type)
+    public function it_does_not_throw_from_then_for_invalid_rejection_callback($invalidCallable, $type)
     {
         $promise = Promise::reject(new \Exception());
         $promise->then(null, $invalidCallable);
@@ -83,7 +83,7 @@ class AssertInactiveTest extends TestCase
      * @dataProvider invalidCallbackDataProvider
      * @doesNotPerformAssertions
      **/
-    public function it_throws_from_always_for_invalid_callback($invalidCallable, $type)
+    public function it_does_not_throw_from_always_for_invalid_callback($invalidCallable, $type)
     {
         $promise = Promise::resolve();
         $promise->always($invalidCallable);

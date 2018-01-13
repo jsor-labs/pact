@@ -40,7 +40,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      */
-    public function it_throws_from_constructor_for_invalid_resolver($invalidCallable, $type)
+    public function it_triggers_warning_from_constructor_for_invalid_resolver($invalidCallable, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             $description = 'Argument 1 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 12);
@@ -82,7 +82,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      */
-    public function it_throws_from_constructor_for_invalid_canceller($invalidCallable, $type)
+    public function it_triggers_warning_from_constructor_for_invalid_canceller($invalidCallable, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             $description = 'Argument 2 passed to Pact\Promise::__construct() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 12);
@@ -124,7 +124,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidReasonProvider
      **/
-    public function it_throws_from_reject_for_invalid_rejection_reason($invalidReason, $type)
+    public function it_triggers_warning_from_reject_for_invalid_rejection_reason($invalidReason, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             if (\PHP_VERSION_ID >= 70000) {
@@ -166,7 +166,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_throws_from_then_for_invalid_fulfillment_callback($invalidCallable, $type)
+    public function it_triggers_warning_from_then_for_invalid_fulfillment_callback($invalidCallable, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             $description = 'Argument 1 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 13);
@@ -210,7 +210,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_throws_from_then_for_invalid_rejection_callback($invalidCallable, $type)
+    public function it_triggers_warning_from_then_for_invalid_rejection_callback($invalidCallable, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             $description = 'Argument 2 passed to Pact\Promise::then() must be callable or null, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 13);
@@ -254,7 +254,7 @@ class AssertActiveTest extends TestCase
      * @test
      * @dataProvider invalidCallbackDataProvider
      **/
-    public function it_throws_from_always_for_invalid_callback($invalidCallable, $type)
+    public function it_triggers_warning_from_always_for_invalid_callback($invalidCallable, $type)
     {
         if (\PHP_VERSION_ID >= 50408) {
             $description = 'Argument 1 passed to Pact\Promise::always() must be callable, ' . $type . ' given, called in ' . __FILE__ . ' on line ' . (__LINE__ + 13);
