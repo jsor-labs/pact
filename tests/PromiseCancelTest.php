@@ -305,6 +305,26 @@ class PromiseCancelTest extends TestCase
     }
 
     /** @test */
+    public function it_invokes_canceller_when_followers_child_cancels()
+    {
+        $root = new Promise(
+            function () {},
+            $this->expectCallableOnce()
+        );
+
+        $follower = new Promise(
+            function ($resolve) use ($root) {
+                $resolve($root);
+            }
+            // Canceller explicitly omitted
+        );
+
+        $follower
+            ->then() // Explicit child for cancellation propagation
+            ->cancel();
+    }
+
+    /** @test */
     public function it_invokes_cancellation_chain_upwards()
     {
         $sequence = '';
@@ -464,7 +484,28 @@ class PromiseCancelTest extends TestCase
             $this->expectCallableOnce()
         );
 
-        $promise->cancel();
+        $promise
+            ->then() // Explicit child for cancellation propagation
+            ->cancel();
+
+        $this->assertTrue($thenable->cancelCalled);
+    }
+
+    /** @test */
+    public function it_invokes_foreign_cancel_without_own_canceller()
+    {
+        $thenable = new SimpleTestCancellableThenable();
+
+        $promise = new Promise(
+            function ($resolve) use ($thenable) {
+                $resolve($thenable);
+            }
+            // Canceller explicitly omitted
+        );
+
+        $promise
+            ->then() // Explicit child for cancellation propagation
+            ->cancel();
 
         $this->assertTrue($thenable->cancelCalled);
     }

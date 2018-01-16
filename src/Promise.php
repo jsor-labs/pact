@@ -168,24 +168,18 @@ final class Promise
             );
         }
 
-        $canceller = null;
+        $that = $this;
+        $requiredCancelRequests = &$this->requiredCancelRequests;
 
-        if (null !== $this->canceller) {
-            $this->requiredCancelRequests++;
+        $requiredCancelRequests++;
 
-            $that = $this;
-            $requiredCancelRequests =& $this->requiredCancelRequests;
+        $child = new Promise(null, function () use ($that, &$requiredCancelRequests) {
+            $requiredCancelRequests--;
 
-            $canceller = function () use ($that, &$requiredCancelRequests) {
-                $requiredCancelRequests--;
-
-                if ($requiredCancelRequests <= 0) {
-                    $that->cancel();
-                }
-            };
-        }
-
-        $child = new Promise(null, $canceller);
+            if ($requiredCancelRequests <= 0) {
+                $that->cancel();
+            }
+        });
 
         $this->_handle($child, $onFulfilled, $onRejected);
 
