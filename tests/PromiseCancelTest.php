@@ -349,7 +349,7 @@ class PromiseCancelTest extends TestCase
     }
 
     /** @test */
-    public function it_breaks_upward_cancellation_chaon_when_one_followee_has_another_follower()
+    public function it_breaks_upward_cancellation_chain_when_one_followee_has_another_follower()
     {
         $sequence = '';
 
