@@ -186,4 +186,64 @@ class PromiseResolveTest extends TestCase
         $resolve3($promise2);
         $resolve2($promise1);
     }
+
+    /**
+     * @test
+     */
+    public function it_propagates_fulfillment_to_children()
+    {
+        $promise = new Promise(function ($res) use (&$resolve) {
+            $resolve = $res;
+        });
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo(1));
+
+        $promise
+            ->then(function ($value) {
+                return $value;
+            }, $this->expectCallableNever())
+            ->then($mock, $this->expectCallableNever());
+
+        $resolve(1);
+    }
+
+    /** @test */
+    public function it_propagates_fulfillment_from_follower()
+    {
+        $root = new Promise(function ($res) use (&$resolve) {
+            $resolve = $res;
+        });
+
+        $promise1 = new Promise(function ($res) use ($root) {
+            $res($root);
+        });
+
+        $promise2 = new Promise(function ($res) use ($promise1) {
+            $res($promise1);
+        });
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo(1));
+
+        $promise1
+            ->then($mock, $this->expectCallableNever());
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo(1));
+
+        $promise2
+            ->then($mock, $this->expectCallableNever());
+
+        $resolve(1);
+    }
 }

@@ -210,4 +210,68 @@ class PromiseRejectTest extends TestCase
             PromiseRejectTest::fail($failure);
         }
     }
+
+    /**
+     * @test
+     */
+    public function it_propagates_rejection_to_children()
+    {
+        $exception = new \Exception();
+
+        $promise = new Promise(function ($res, $rej) use (&$reject) {
+            $reject = $rej;
+        });
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise
+            ->then($this->expectCallableNever(), function ($reason) {
+                throw $reason;
+            })
+            ->then($this->expectCallableNever(), $mock);
+
+        $reject($exception);
+    }
+
+    /** @test */
+    public function it_propagates_rejection_from_follower()
+    {
+        $exception = new \Exception();
+
+        $root = new Promise(function ($res, $rej) use (&$reject) {
+            $reject = $rej;
+        });
+
+        $promise1 = new Promise(function ($res) use ($root) {
+            $res($root);
+        });
+
+        $promise2 = new Promise(function ($res) use ($promise1) {
+            $res($promise1);
+        });
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise1
+            ->then($this->expectCallableNever(), $mock);
+
+        $mock = $this->createCallableMock();
+        $mock
+            ->expects($this->once())
+            ->method('__invoke')
+            ->with($this->identicalTo($exception));
+
+        $promise2
+            ->then($this->expectCallableNever(), $mock);
+
+        $reject($exception);
+    }
 }
