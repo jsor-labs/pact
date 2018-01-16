@@ -330,16 +330,16 @@ final class Promise
         $onFulfilled = null,
         $onRejected = null
     ) {
-        $parent = $this->_target();
+        $target = $this->_target();
 
-        if (Promise::STATE_PENDING === $parent->state) {
-            $parent->handlers[] = array($child, $onFulfilled, $onRejected);
+        if (Promise::STATE_PENDING === $target->state) {
+            $target->handlers[] = array($child, $onFulfilled, $onRejected);
             return;
         }
 
-        $isFulfilled = Promise::STATE_FULFILLED === $parent->state;
+        $isFulfilled = Promise::STATE_FULFILLED === $target->state;
         $callback = $isFulfilled ? $onFulfilled : $onRejected;
-        $result = $parent->result;
+        $result = $target->result;
 
         self::enqueue(function () use ($child, $isFulfilled, $callback, $result) {
             if (!\is_callable($callback)) {
@@ -414,6 +414,7 @@ final class Promise
         }
 
         $this->state = Promise::STATE_FOLLOWING;
+        $this->result = $target;
 
         $result->requiredCancelRequests++;
         $this->parent = $result;
@@ -472,7 +473,7 @@ final class Promise
         $target = $this;
 
         while (Promise::STATE_FOLLOWING === $target->state) {
-            $target = $target->parent;
+            $target = $target->result;
         }
 
         return $target;
