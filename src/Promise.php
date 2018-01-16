@@ -168,18 +168,10 @@ final class Promise
             );
         }
 
-        $that = $this;
-        $requiredCancelRequests = &$this->requiredCancelRequests;
+        $this->requiredCancelRequests++;
 
-        $requiredCancelRequests++;
-
-        $child = new Promise(null, function () use ($that, &$requiredCancelRequests) {
-            $requiredCancelRequests--;
-
-            if ($requiredCancelRequests <= 0) {
-                $that->cancel();
-            }
-        });
+        $child = new Promise();
+        $child->parent = $this;
 
         $this->_handle($child, $onFulfilled, $onRejected);
 
