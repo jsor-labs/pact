@@ -344,7 +344,7 @@ final class Promise
         self::enqueue(function () use ($child, $isFulfilled, $callback, $result) {
             if (!\is_callable($callback)) {
                 if ($isFulfilled) {
-                    $child->_resolve($result);
+                    $child->_fulfill($result);
                 } else {
                     $child->_reject($result);
                 }
@@ -427,7 +427,10 @@ final class Promise
         $this->handlers = null;
     }
 
-    private function _fulfill($value)
+    /**
+     * @internal
+     */
+    public function _fulfill($value)
     {
         $this->_settle(Promise::STATE_FULFILLED, $value);
     }
