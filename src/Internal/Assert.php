@@ -2,11 +2,11 @@
 
 namespace Pact\Internal;
 
+/**
+ * @internal
+ */
 final class Assert
 {
-    /**
-     * @internal
-     */
     public static function descriptionForTypeHintedArgument(
         $message,
         $method,
@@ -19,9 +19,6 @@ final class Assert
         );
     }
 
-    /**
-     * @internal
-     */
     public static function descriptionForClassTypeHintedArgument(
         $message,
         $method,
