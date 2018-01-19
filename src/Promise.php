@@ -9,16 +9,43 @@ final class Promise
     const STATE_FULFILLED = 2;
     const STATE_REJECTED = 3;
 
-    private $canceller;
-
     private $state = Promise::STATE_PENDING;
 
     private $handlers = array();
 
+    /**
+     * The result once the promise got resolved.
+     *
+     * This property holds the topmost `Pact\Promise` in the chain for the time
+     * this Promise is following another `Pact\Promise`.
+     *
+     * Once this Promise is settled, it holds the value (in case of fulfillment)
+     * or the reason (in case of rejection).
+     *
+     * As long as this Promise is unresolved, this property is `null`.
+     *
+     * @var null|Promise|mixed|\Throwable|\Exception
+     */
     private $result;
 
-    /** @var Promise */
+    /**
+     * The parent Promise used for cancellation propagation.
+     *
+     * This property holds the parent `Pact\Promise` or a foreign Thenable
+     * (if the object has a `cancel()` method) for the time this Promise is
+     * resolved with another pending Promise.
+     *
+     * This property is `null` if this Promise is unresolved or after this
+     * Promise has been settled or cancelled.
+     *
+     * @var null|Promise|object
+     */
     private $parent;
+
+    /**
+     * @var callable|null
+     */
+    private $canceller;
 
     private $requiredCancelRequests = 0;
     private $isCancelled = false;
