@@ -117,20 +117,13 @@ final class Promise
      */
     public static function reject($reason)
     {
-        if (\PHP_VERSION_ID >= 70000) {
+        if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                $assertion = $reason instanceof \Throwable,
+                $assertion = \PHP_VERSION_ID >= 70000 ? $reason instanceof \Throwable : $reason instanceof \Exception,
                 $assertion ? null : (($desc = Internal\Assert::descriptionForClassTypeHintedArgument(
-                    'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable',
-                    __METHOD__,
-                    $reason
-                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
-            );
-        } elseif (\PHP_VERSION_ID >= 50408) {
-            \assert(
-                $assertion = $reason instanceof \Exception,
-                $assertion ? null : (($desc = Internal\Assert::descriptionForClassTypeHintedArgument(
-                    'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
+                    \PHP_VERSION_ID >= 70000
+                        ? 'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable'
+                        : 'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
                     __METHOD__,
                     $reason
                 )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
