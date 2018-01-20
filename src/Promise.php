@@ -82,7 +82,7 @@ final class Promise
         $this->canceller = $canceller;
 
         if (null !== $resolver) {
-            $this->_call($resolver);
+            $this->_resolveFromCallback($resolver);
         }
     }
 
@@ -92,7 +92,7 @@ final class Promise
      */
     public static function resolve($promiseOrValue = null)
     {
-        if ($promiseOrValue instanceof Promise) {
+        if ($promiseOrValue instanceof self) {
             return $promiseOrValue;
         }
 
@@ -151,7 +151,7 @@ final class Promise
     {
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                $assertion = null === $onFulfilled || \is_callable($onFulfilled),
+                $assertion = (null === $onFulfilled || \is_callable($onFulfilled)),
                 $assertion ? null : (($desc = TypeError::messageForTypeHintedArgument(
                     'Argument 1 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
@@ -166,7 +166,7 @@ final class Promise
 
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
-                $assertion = null === $onRejected || \is_callable($onRejected),
+                $assertion = (null === $onRejected || \is_callable($onRejected)),
                 $assertion ? null : (($desc = TypeError::messageForTypeHintedArgument(
                     'Argument 2 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
@@ -235,8 +235,8 @@ final class Promise
     public function cancel()
     {
         if (
-            Promise::STATE_FULFILLED === $this->state ||
-            Promise::STATE_REJECTED === $this->state
+            self::STATE_FULFILLED === $this->state ||
+            self::STATE_REJECTED === $this->state
         ) {
             return;
         }
@@ -250,7 +250,7 @@ final class Promise
         $parentCanceller = null;
 
         if ($parent) {
-            if ($parent instanceof Promise) {
+            if ($parent instanceof self) {
                 $parent->requiredCancelRequests--;
 
                 if ($parent->requiredCancelRequests <= 0) {
@@ -264,7 +264,7 @@ final class Promise
         }
 
         if (null !== $canceller) {
-            $this->_call($canceller);
+            $this->_resolveFromCallback($canceller);
         }
 
         // Call the parent canceller after our own canceller
@@ -281,7 +281,7 @@ final class Promise
      */
     public function isFulfilled()
     {
-        return Promise::STATE_FULFILLED === $this->state;
+        return self::STATE_FULFILLED === $this->state;
     }
 
     /**
@@ -289,7 +289,7 @@ final class Promise
      */
     public function isRejected()
     {
-        return Promise::STATE_REJECTED === $this->state;
+        return self::STATE_REJECTED === $this->state;
     }
 
     /**
@@ -299,8 +299,8 @@ final class Promise
     {
         return (
             //!$this->isCancelled &&
-            Promise::STATE_FULFILLED !== $this->state &&
-            Promise::STATE_REJECTED !== $this->state
+            self::STATE_FULFILLED !== $this->state &&
+            self::STATE_REJECTED !== $this->state
         );
     }
 
@@ -314,10 +314,11 @@ final class Promise
 
     /**
      * @return mixed
+     * @throws LogicException
      */
     public function value()
     {
-        if (Promise::STATE_FULFILLED === $this->state) {
+        if (self::STATE_FULFILLED === $this->state) {
             return $this->result;
         }
 
@@ -326,10 +327,11 @@ final class Promise
 
     /**
      * @return \Exception|\Throwable
+     * @throws LogicException
      */
     public function reason()
     {
-        if (Promise::STATE_REJECTED === $this->state) {
+        if (self::STATE_REJECTED === $this->state) {
             return $this->result;
         }
 
@@ -343,12 +345,12 @@ final class Promise
     ) {
         $target = $this->_target();
 
-        if (Promise::STATE_PENDING === $target->state) {
+        if (self::STATE_PENDING === $target->state) {
             $target->handlers[] = array($child, $onFulfilled, $onRejected);
             return;
         }
 
-        $isFulfilled = Promise::STATE_FULFILLED === $target->state;
+        $isFulfilled = self::STATE_FULFILLED === $target->state;
         $callback = $isFulfilled ? $onFulfilled : $onRejected;
         $result = $target->result;
 
@@ -380,7 +382,7 @@ final class Promise
      */
     public function _resolve($result = null)
     {
-        if (Promise::STATE_PENDING !== $this->state) {
+        if (self::STATE_PENDING !== $this->state) {
             return;
         }
 
@@ -396,12 +398,12 @@ final class Promise
             return;
         }
 
-        if (!$result instanceof Promise) {
+        if (!$result instanceof self) {
             if (\method_exists($result, 'cancel')) {
                 $this->parent = $result;
             }
 
-            $this->_call(array($result, 'then'));
+            $this->_resolveFromCallback(array($result, 'then'));
             return;
         }
 
@@ -414,17 +416,17 @@ final class Promise
             return;
         }
 
-        if (Promise::STATE_FULFILLED === $target->state) {
+        if (self::STATE_FULFILLED === $target->state) {
             $this->_fulfill($target->result);
             return;
         }
 
-        if (Promise::STATE_REJECTED === $target->state) {
+        if (self::STATE_REJECTED === $target->state) {
             $this->_reject($target->result);
             return;
         }
 
-        $this->state = Promise::STATE_FOLLOWING;
+        $this->state = self::STATE_FOLLOWING;
         $this->result = $target;
 
         $result->requiredCancelRequests++;
@@ -443,7 +445,7 @@ final class Promise
      */
     public function _fulfill($value)
     {
-        $this->_settle(Promise::STATE_FULFILLED, $value);
+        $this->_settle(self::STATE_FULFILLED, $value);
     }
 
     /**
@@ -451,12 +453,12 @@ final class Promise
      */
     public function _reject($reason)
     {
-        $this->_settle(Promise::STATE_REJECTED, $reason);
+        $this->_settle(self::STATE_REJECTED, $reason);
     }
 
     private function _settle($state, $result)
     {
-        if (Promise::STATE_PENDING !== $this->state) {
+        if (self::STATE_PENDING !== $this->state) {
             return;
         }
 
@@ -486,14 +488,14 @@ final class Promise
     {
         $target = $this;
 
-        while (Promise::STATE_FOLLOWING === $target->state) {
+        while (self::STATE_FOLLOWING === $target->state) {
             $target = $target->result;
         }
 
         return $target;
     }
 
-    private function _call($callback)
+    private function _resolveFromCallback($callback)
     {
         if (!\is_callable($callback)) {
             return;

@@ -36,14 +36,6 @@ final class ReasonException extends \RuntimeException implements PactThrowable
         return $exception;
     }
 
-    /**
-     * @internal
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
-
     public function hasReason()
     {
         return $this->hasReason;
