@@ -44,10 +44,10 @@ as follows:
 
   If `$reason` is not an instance of `\Throwable` in PHP 7 or an instance of
   `\Exception` in PHP 5, it will be wrapped in `Pact\ReasonException`.
-  
-  Note, that `$reason` passed as argument to the `$onRejected` callback of
-  `then()` is always a `\Throwable` (or `\Exception`) and it is safe to 
-  `throw $reason` inside the callback.
+
+  This ensures that `$reason` passed as argument to the `$onRejected` callback
+  of `then()` is always a `\Throwable` (or `\Exception` in PHP 5) and it is safe
+  to `throw $reason` inside the callback.
 * `Promise::then(callable $onFulfilled = null, callable $onRejected = null)`
 
   If both `$onFulfilled` or `$onRejected` are not a `callable` or `null`, they
