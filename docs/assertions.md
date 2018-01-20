@@ -6,7 +6,6 @@ This library does not use
 but [assert()](http://php.net/assert) to check the types of arguments passed to
 the following functions.
 
-* `Promise::__construct(callable $resolver = null, callable $canceller = null)`
 * `Promise::reject(\Throwable $reason)` for PHP 7, 
   `Promise::reject(\Exception $reason)` for PHP 5
 * `Promise::then(callable $onFulfilled = null, callable $onRejected = null)`
@@ -36,10 +35,6 @@ function type declaration.
 This library is fully functional with disabled assertions. The behaviour is
 as follows:
 
-* `Promise::__construct(callable $resolver = null, callable $canceller = null)`
-
-  If both `$resolver` or `$canceller` are not a `callable` or `null`, they will
-  be ignored.
 * `Promise::reject(\Throwable|\Exception $reason)`
 
   If `$reason` is not an instance of `\Throwable` in PHP 7 or an instance of

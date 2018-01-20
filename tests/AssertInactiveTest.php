@@ -25,26 +25,6 @@ class AssertInactiveTest extends TestCase
 
     /**
      * @test
-     * @dataProvider invalidCallbackDataProvider
-     * @doesNotPerformAssertions
-     */
-    public function it_does_not_throw_from_constructor_for_invalid_resolver($invalidCallable, $type)
-    {
-        new Promise($invalidCallable);
-    }
-
-    /**
-     * @test
-     * @dataProvider invalidCallbackDataProvider
-     * @doesNotPerformAssertions
-     */
-    public function it_does_not_throw_from_constructor_for_invalid_canceller($invalidCallable, $type)
-    {
-        new Promise(null, $invalidCallable);
-    }
-
-    /**
-     * @test
      * @dataProvider invalidReasonProvider
      * @doesNotPerformAssertions
      **/
