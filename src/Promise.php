@@ -497,10 +497,6 @@ final class Promise
 
     private function _resolveFromCallback($callback)
     {
-        if (!\is_callable($callback)) {
-            return;
-        }
-
         $that = $this;
 
         try {
