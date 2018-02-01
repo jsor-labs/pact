@@ -6,10 +6,14 @@ final class Promise
 {
     const STATE_PENDING = 0;
     const STATE_FOLLOWING = 1;
-    const STATE_FULFILLED = 2;
-    const STATE_REJECTED = 3;
+    const STATE_FOLLOWING_FOREIGN = 2;
+    const STATE_FULFILLED = 3;
+    const STATE_REJECTED = 4;
 
-    private $state = Promise::STATE_PENDING;
+    /**
+     * @internal
+     */
+    public $state = Promise::STATE_PENDING;
 
     private $handlers = array();
 
@@ -345,7 +349,10 @@ final class Promise
     ) {
         $target = $this->_target();
 
-        if (self::STATE_PENDING === $target->state) {
+        if (
+            self::STATE_FULFILLED !== $target->state &&
+            self::STATE_REJECTED !== $target->state
+        ) {
             $target->handlers[] = array($child, $onFulfilled, $onRejected);
             return;
         }
@@ -403,7 +410,9 @@ final class Promise
                 $this->parent = $result;
             }
 
-            $this->_resolveFromCallback(array($result, 'then'));
+            $this->state = self::STATE_FOLLOWING_FOREIGN;
+            $this->_resolveFromCallback(array($result, 'then'), true);
+
             return;
         }
 
@@ -495,21 +504,25 @@ final class Promise
         return $target;
     }
 
-    private function _resolveFromCallback($callback)
+    private function _resolveFromCallback($callback, $unblock = false)
     {
         $that = $this;
 
         try {
             \call_user_func(
                 $callback,
-                function ($value = null) use ($that) {
+                function ($value = null) use ($that, $unblock) {
+                    if ($unblock) {
+                        $that->state = Promise::STATE_PENDING;
+                    }
+
                     $that->_resolve($value);
                 },
                 // Allow rejecting with non-throwable reasons to ensure
                 // interoperability with foreign promise implementations which
                 // may allow arbitrary reason types or even rejecting without
                 // a reason.
-                function ($reason = null) use ($that) {
+                function ($reason = null) use ($that, $unblock) {
                     if (null === $reason) {
                         if (0 === \func_num_args()) {
                             $reason = ReasonException::createWithoutReason();
@@ -520,12 +533,24 @@ final class Promise
                         $reason = ReasonException::createForReason($reason);
                     }
 
+                    if ($unblock) {
+                        $that->state = Promise::STATE_PENDING;
+                    }
+
                     $that->_reject($reason);
                 }
             );
         } catch (\Exception $e) {
+            if ($unblock) {
+                $this->state = Promise::STATE_PENDING;
+            }
+
             $this->_reject($e);
         } catch (\Throwable $e) {
+            if ($unblock) {
+                $this->state = Promise::STATE_PENDING;
+            }
+
             $this->_reject($e);
         }
     }

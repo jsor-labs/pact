@@ -45,7 +45,7 @@ class FunctionResolveTest extends TestCase
     /** @test */
     public function it_resolves_a_thenable()
     {
-        $thenable = new SimpleFulfilledTestThenable();
+        $thenable = new SimpleFulfilledTestThenable('foo');
 
         $mock = $this->createCallableMock();
         $mock
@@ -63,7 +63,7 @@ class FunctionResolveTest extends TestCase
     /** @test */
     public function it_resolves_a_cancellable_thenable()
     {
-        $thenable = new SimpleTestCancellableThenable();
+        $thenable = new SimpleCancellableTestThenable();
 
         $promise = Promise::resolve($thenable);
         $promise->cancel();

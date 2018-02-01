@@ -2,7 +2,7 @@
 
 namespace Pact;
 
-class SimpleTestCancellableThenable
+class SimpleCancellableTestThenable
 {
     public $cancelCalled = false;
     public $onCancel;
