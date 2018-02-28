@@ -65,7 +65,7 @@ final class Promise
     {
         if (null !== $resolver && !\is_callable($resolver)) {
             throw new TypeError(
-                TypeError::messageForTypeHintedArgument(
+                TypeError::messageForIncorrectArgumentType(
                     'Argument 1 passed to Pact\Promise::__construct() must be callable or null',
                     __METHOD__,
                     $resolver
@@ -75,7 +75,7 @@ final class Promise
 
         if (null !== $canceller && !\is_callable($canceller)) {
             throw new TypeError(
-                TypeError::messageForTypeHintedArgument(
+                TypeError::messageForIncorrectArgumentType(
                     'Argument 2 passed to Pact\Promise::__construct() must be callable or null',
                     __METHOD__,
                     $canceller
@@ -115,7 +115,7 @@ final class Promise
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
                 $assertion = \PHP_VERSION_ID >= 70000 ? $reason instanceof \Throwable : $reason instanceof \Exception,
-                $assertion ? null : (($desc = TypeError::messageForClassTypeHintedArgument(
+                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentClassType(
                     \PHP_VERSION_ID >= 70000
                         ? 'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable'
                         : 'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
@@ -156,7 +156,7 @@ final class Promise
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
                 $assertion = (null === $onFulfilled || \is_callable($onFulfilled)),
-                $assertion ? null : (($desc = TypeError::messageForTypeHintedArgument(
+                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
                     'Argument 1 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
                     $onFulfilled
@@ -171,7 +171,7 @@ final class Promise
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
                 $assertion = (null === $onRejected || \is_callable($onRejected)),
-                $assertion ? null : (($desc = TypeError::messageForTypeHintedArgument(
+                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
                     'Argument 2 passed to Pact\Promise::then() must be callable or null',
                     __METHOD__,
                     $onRejected
@@ -202,7 +202,7 @@ final class Promise
         if (\PHP_VERSION_ID >= 50408) {
             \assert(
                 $assertion = \is_callable($onSettled),
-                $assertion ? null : (($desc = TypeError::messageForTypeHintedArgument(
+                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
                     'Argument 1 passed to Pact\Promise::always() must be callable',
                     __METHOD__,
                     $onSettled

@@ -20,7 +20,7 @@ namespace {
 namespace Pact {
     final class TypeError extends \TypeError implements PactThrowable
     {
-        public static function messageForTypeHintedArgument(
+        public static function messageForIncorrectArgumentType(
             $message,
             $method,
             $arg
@@ -32,7 +32,7 @@ namespace Pact {
             );
         }
 
-        public static function messageForClassTypeHintedArgument(
+        public static function messageForIncorrectArgumentClassType(
             $message,
             $method,
             $arg
