@@ -11,6 +11,12 @@ final class Promise
     const STATE_REJECTED = 4;
 
     /**
+     * Constant used to explicitly overwrite arguments and references.
+     * This ensures that they do not show up in stack traces in PHP 7+.
+     */
+    const GC_CLEANUP = '[Pact\Promise::GC_CLEANUP]';
+
+    /**
      * @internal
      */
     public $state = Promise::STATE_PENDING;
@@ -85,8 +91,14 @@ final class Promise
 
         $this->canceller = $canceller;
 
+        if (null !== $canceller) {
+            $canceller = self::GC_CLEANUP;
+        }
+
         if (null !== $resolver) {
-            $this->_resolveFromCallback($resolver);
+            $cb = $resolver;
+            $resolver = self::GC_CLEANUP;
+            $this->_resolveFromCallback($cb);
         }
     }
 
@@ -258,12 +270,12 @@ final class Promise
                 $parent->requiredCancelRequests--;
 
                 if ($parent->requiredCancelRequests <= 0) {
-                    $parentCanceller = array($parent, 'cancel');
+                    $parentCanceller = array(&$parent, 'cancel');
                 }
             } else {
                 // Parent is a foreign promise, check for cancel() is already
                 // done in _resolveCallback()
-                $parentCanceller = array($parent, 'cancel');
+                $parentCanceller = array(&$parent, 'cancel');
             }
         }
 
@@ -275,6 +287,8 @@ final class Promise
         if ($parentCanceller) {
             \call_user_func($parentCanceller);
         }
+
+        $parent = self::GC_CLEANUP;
 
         // Must be set after cancellation chain is run
         $this->isCancelled = true;
@@ -504,55 +518,129 @@ final class Promise
         return $target;
     }
 
-    private function _resolveFromCallback($callback, $unblock = false)
+    private function _resolveFromCallback($cb, $unblock = false)
     {
-        $that = $this;
+        $callback = $cb;
+        $cb = self::GC_CLEANUP;
+
+        // Use reflection to inspect number of arguments expected by this callback.
+        // We did some careful benchmarking here: Using reflection to avoid unneeded
+        // function arguments is actually faster than blindly passing them.
+        // Also, this helps avoiding unnecessary function arguments in the call stack
+        // if the callback creates an Exception (creating garbage cycles).
+        if (is_array($callback)) {
+            $ref = new \ReflectionMethod($callback[0], $callback[1]);
+        } elseif (is_object($callback) && !$callback instanceof \Closure) {
+            $ref = new \ReflectionMethod($callback, '__invoke');
+        } else {
+            $ref = new \ReflectionFunction($callback);
+        }
+
+        $args = $ref->getNumberOfParameters();
 
         try {
+            if ($args === 0) {
+                $callback();
+                return;
+            }
+
+            // Keep a reference to this promise instance for the static
+            // resolve/reject functions.
+            // See also resolveFunction() and rejectFunction() for more details.
+            $target = &$this;
+
             \call_user_func(
                 $callback,
-                function ($value = null) use ($that, $unblock) {
-                    if ($unblock) {
-                        $that->state = Promise::STATE_PENDING;
-                    }
-
-                    $that->_resolve($value);
-                },
-                // Allow rejecting with non-throwable reasons to ensure
-                // interoperability with foreign promise implementations which
-                // may allow arbitrary reason types or even rejecting without
-                // a reason.
-                function ($reason = null) use ($that, $unblock) {
-                    if (null === $reason) {
-                        if (0 === \func_num_args()) {
-                            $reason = ReasonException::createWithoutReason();
-                        } else {
-                            $reason = ReasonException::createForReason(null);
-                        }
-                    } elseif (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
-                        $reason = ReasonException::createForReason($reason);
-                    }
-
-                    if ($unblock) {
-                        $that->state = Promise::STATE_PENDING;
-                    }
-
-                    $that->_reject($reason);
-                }
+                self::resolveFunction($target, $unblock),
+                self::rejectFunction($target, $unblock)
             );
         } catch (\Exception $e) {
+            $target = self::GC_CLEANUP;;
+
             if ($unblock) {
                 $this->state = Promise::STATE_PENDING;
             }
 
             $this->_reject($e);
         } catch (\Throwable $e) {
+            $target = self::GC_CLEANUP;
+
             if ($unblock) {
                 $this->state = Promise::STATE_PENDING;
             }
 
             $this->_reject($e);
         }
+    }
+
+    /**
+     * Creates a static resolver callback that is not bound to a promise instance.
+     *
+     * Moving the closure creation to a static method allows us to create a
+     * callback that is not bound to a promise instance. By passing the target
+     * promise instance by reference, we can still execute its resolving logic
+     * and still clear this reference when settling the promise. This helps
+     * avoiding garbage cycles if any callback creates an Exception.
+     *
+     * These assumptions are covered by the test suite, so if you ever feel like
+     * refactoring this, go ahead, any alternative suggestions are welcome!
+     */
+    private static function resolveFunction(self &$target, $unblock)
+    {
+        return function ($value = null) use (&$target, $unblock) {
+            if (Promise::GC_CLEANUP === $target) {
+                return;
+            }
+
+            if ($unblock) {
+                $target->state = Promise::STATE_PENDING;
+            }
+
+            $target->_resolve($value);
+            $target = Promise::GC_CLEANUP;
+        };
+    }
+
+    /**
+     * Creates a static rejection callback that is not bound to a promise instance.
+     *
+     * Moving the closure creation to a static method allows us to create a
+     * callback that is not bound to a promise instance. By passing the target
+     * promise instance by reference, we can still execute its rejection logic
+     * and still clear this reference when settling the promise. This helps
+     * avoiding garbage cycles if any callback creates an Exception.
+     *
+     * These assumptions are covered by the test suite, so if you ever feel like
+     * refactoring this, go ahead, any alternative suggestions are welcome!
+     */
+    private static function rejectFunction(self &$target, $unblock)
+    {
+        // Allow rejecting with non-throwable reasons to ensure
+        // interoperability with foreign promise implementations which
+        // may allow arbitrary reason types or even rejecting without
+        // a reason.
+        return function ($reason = null) use (&$target, $unblock) {
+            if (Promise::GC_CLEANUP === $target) {
+                return;
+            }
+
+            if (null === $reason) {
+                if (0 === \func_num_args()) {
+                    $reason = ReasonException::createWithoutReason();
+                } else {
+                    $reason = ReasonException::createForReason(null);
+                }
+            } elseif (!$reason instanceof \Throwable && !$reason instanceof \Exception) {
+                $reason = ReasonException::createForReason($reason);
+            }
+
+            if ($unblock) {
+                $target->state = Promise::STATE_PENDING;
+            }
+
+            $target->_reject($reason);
+            $target = Promise::GC_CLEANUP;
+        };
     }
 
     private static function enqueue($task)

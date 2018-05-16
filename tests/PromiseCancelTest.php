@@ -53,15 +53,29 @@ class PromiseCancelTest extends TestCase
     /** @test */
     public function it_invokes_canceller_with_resolver_arguments()
     {
-        $mock = $this->createCallableMock();
-        $mock
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($this->isType('callable'), $this->isType('callable'));
-
-        $promise = new Promise(function () {}, $mock);
+        $args = null;
+        $promise = new Promise(function () {}, function ($resolve, $reject) use (&$args) {
+            $args = func_get_args();
+        });
 
         $promise->cancel();
+
+        $this->assertCount(2, $args);
+        $this->assertInternalType('callable', $args[0]);
+        $this->assertInternalType('callable', $args[1]);
+    }
+
+    /** @test */
+    public function it_invokes_canceller_without_arguments_if_not_accessed()
+    {
+        $args = null;
+        $promise = new Promise(function () {}, function () use (&$args) {
+            $args = func_num_args();
+        });
+
+        $promise->cancel();
+
+        $this->assertSame(0, $args);
     }
 
     /** @test */
