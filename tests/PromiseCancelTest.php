@@ -38,6 +38,38 @@ class PromiseCancelTest extends TestCase
     }
 
     /** @test */
+    public function it_does_not_invoke_cancellers_of_child_promises_for_fulfilled_promise()
+    {
+        /** @var callable $resolve1 */
+        $resolve1 = null;
+
+        $promise1 = new Promise(
+            function ($resolve) use (&$resolve1) {
+                $resolve1 = $resolve;
+            },
+            $this->expectCallableNever()
+        );
+
+        $promise2 = new Promise(
+            function ($resolve) use ($promise1) {
+                $resolve($promise1);
+            },
+            $this->expectCallableNever()
+        );
+
+        $promise3 = new Promise(
+            function ($resolve) use ($promise2) {
+                $resolve($promise2);
+            },
+            $this->expectCallableNever()
+        );
+
+        $resolve1(1);
+
+        $promise3->cancel();
+    }
+
+    /** @test */
     public function it_does_not_invoke_canceller_for_rejected_promise()
     {
         $promise = new Promise(
@@ -48,6 +80,38 @@ class PromiseCancelTest extends TestCase
         );
 
         $promise->cancel();
+    }
+
+    /** @test */
+    public function it_does_not_invoke_cancellers_of_child_promises_for_rejected_promise()
+    {
+        /** @var callable $reject1 */
+        $reject1 = null;
+
+        $promise1 = new Promise(
+            function ($resolve, $reject) use (&$reject1) {
+                $reject1 = $reject;
+            },
+            $this->expectCallableNever()
+        );
+
+        $promise2 = new Promise(
+            function ($resolve) use ($promise1) {
+                $resolve($promise1);
+            },
+            $this->expectCallableNever()
+        );
+
+        $promise3 = new Promise(
+            function ($resolve) use ($promise2) {
+                $resolve($promise2);
+            },
+            $this->expectCallableNever()
+        );
+
+        $reject1(new \Exception());
+
+        $promise3->cancel();
     }
 
     /** @test */

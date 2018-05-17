@@ -26,11 +26,11 @@ final class Promise
     /**
      * The result once the promise got resolved.
      *
-     * This property holds the topmost `Pact\Promise` in the chain for the time
-     * this Promise is following another `Pact\Promise`.
+     * If this Promise is following another `Pact\Promise`, this property holds
+     * the topmost `Pact\Promise` in the chain.
      *
-     * Once this Promise is settled, it holds the value (in case of fulfillment)
-     * or the reason (in case of rejection).
+     * Otherwise, it holds the value (in case of fulfillment)
+     * or the reason (in case of rejection) once this Promise settled.
      *
      * As long as this Promise is unresolved, this property is `null`.
      *
@@ -250,10 +250,7 @@ final class Promise
 
     public function cancel()
     {
-        if (
-            self::STATE_FULFILLED === $this->state ||
-            self::STATE_REJECTED === $this->state
-        ) {
+        if (!$this->isPending()) {
             return;
         }
 
@@ -299,7 +296,7 @@ final class Promise
      */
     public function isFulfilled()
     {
-        return self::STATE_FULFILLED === $this->state;
+        return self::STATE_FULFILLED === $this->_target()->state;
     }
 
     /**
@@ -307,7 +304,7 @@ final class Promise
      */
     public function isRejected()
     {
-        return self::STATE_REJECTED === $this->state;
+        return self::STATE_REJECTED === $this->_target()->state;
     }
 
     /**
@@ -315,10 +312,11 @@ final class Promise
      */
     public function isPending()
     {
+        $target = $this->_target();
+
         return (
-            //!$this->isCancelled &&
-            self::STATE_FULFILLED !== $this->state &&
-            self::STATE_REJECTED !== $this->state
+            self::STATE_FULFILLED !== $target->state &&
+            self::STATE_REJECTED !== $target->state
         );
     }
 
@@ -336,8 +334,10 @@ final class Promise
      */
     public function value()
     {
-        if (self::STATE_FULFILLED === $this->state) {
-            return $this->result;
+        $target = $this->_target();
+
+        if (self::STATE_FULFILLED === $target->state) {
+            return $target->result;
         }
 
         throw LogicException::valueFromNonFulfilledPromise();
@@ -349,8 +349,10 @@ final class Promise
      */
     public function reason()
     {
-        if (self::STATE_REJECTED === $this->state) {
-            return $this->result;
+        $target = $this->_target();
+
+        if (self::STATE_REJECTED === $target->state) {
+            return $target->result;
         }
 
         throw LogicException::reasonFromNonRejectedPromise();
@@ -511,7 +513,7 @@ final class Promise
     {
         $target = $this;
 
-        while (self::STATE_FOLLOWING === $target->state) {
+        while ($target->result instanceof self) {
             $target = $target->result;
         }
 
