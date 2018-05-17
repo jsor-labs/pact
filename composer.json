@@ -1,6 +1,6 @@
 {
     "name": "jsor/pact",
-    "description": "A lightweight promise implementation for PHP",
+    "description": "A Promise implementation for PHP.",
     "license": "MIT",
     "authors": [
         {"name": "Jan Sorgalla", "email": "jsorgalla@gmail.com"}
