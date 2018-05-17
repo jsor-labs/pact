@@ -119,7 +119,7 @@ class PromiseCancelTest extends TestCase
     {
         $args = null;
         $promise = new Promise(function () {}, function ($resolve, $reject) use (&$args) {
-            $args = func_get_args();
+            $args = \func_get_args();
         });
 
         $promise->cancel();
@@ -134,7 +134,7 @@ class PromiseCancelTest extends TestCase
     {
         $args = null;
         $promise = new Promise(function () {}, function () use (&$args) {
-            $args = func_num_args();
+            $args = \func_num_args();
         });
 
         $promise->cancel();

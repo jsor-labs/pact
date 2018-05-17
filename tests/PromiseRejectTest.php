@@ -50,7 +50,7 @@ class PromiseRejectTest extends TestCase
     /** @test */
     public function it_resolves_without_creating_garbage_cycles_if_resolver_resolves_with_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function ($resolve) {
             $resolve(new \Exception('foo'));
@@ -58,13 +58,13 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
     public function it_rejects_without_creating_garbage_cycles_if_resolver_throws_an_exception_without_resolver()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function () {
             throw new \Exception('foo');
@@ -72,13 +72,13 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
     public function it_rejects_without_creating_garbage_cycles_if_resolver_rejects_with_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function ($resolve, $reject) {
             $reject(new \Exception('foo'));
@@ -86,13 +86,13 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
     public function it_rejects_without_creating_garbage_cycles_if_canceller_rejects_with_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function ($resolve, $reject) { }, function ($resolve, $reject) {
             $reject(new \Exception('foo'));
@@ -102,13 +102,13 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
     public function it_rejects_without_creating_garbage_cycles_if_parent_canceller_rejects_with_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function ($resolve, $reject) { }, function ($resolve, $reject) {
             $reject(new \Exception('foo'));
@@ -118,13 +118,13 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
     public function it_rejects_without_creating_garbage_cycles_if_resolver_throws_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function ($resolve, $reject) {
             throw new \Exception('foo');
@@ -132,7 +132,7 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /**
@@ -150,7 +150,7 @@ class PromiseRejectTest extends TestCase
      */
     public function it_rejects_without_creating_garbage_cycles_if_canceller_with_reference_throws_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function () {}, function () use (&$promise) {
             throw new \Exception('foo');
@@ -160,7 +160,7 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /**
@@ -170,7 +170,7 @@ class PromiseRejectTest extends TestCase
      */
     public function it_rejects_without_creating_garbage_cycles_if_resolver_with_reference_throws_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function () use (&$promise) {
             throw new \Exception('foo');
@@ -178,7 +178,7 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /**
@@ -188,7 +188,7 @@ class PromiseRejectTest extends TestCase
      */
     public function it_rejects_without_creating_garbage_cycles_if_canceller_holds_reference_and_resolver_throws_an_exception()
     {
-        gc_collect_cycles();
+        \gc_collect_cycles();
 
         $promise = new Promise(function () {
             throw new \Exception('foo');
@@ -196,7 +196,7 @@ class PromiseRejectTest extends TestCase
 
         unset($promise);
 
-        $this->assertSame(0, gc_collect_cycles());
+        $this->assertSame(0, \gc_collect_cycles());
     }
 
     /** @test */
