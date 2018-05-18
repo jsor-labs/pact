@@ -590,7 +590,7 @@ final class Promise
     private static function resolveFunction(self &$target, $unblock)
     {
         return function ($value = null) use (&$target, $unblock) {
-            if (Promise::GC_CLEANUP === $target) {
+            if (!$target instanceof Promise) {
                 return;
             }
 
@@ -622,7 +622,7 @@ final class Promise
         // may allow arbitrary reason types or even rejecting without
         // a reason.
         return function ($reason = null) use (&$target, $unblock) {
-            if (Promise::GC_CLEANUP === $target) {
+            if (!$target instanceof Promise) {
                 return;
             }
 
