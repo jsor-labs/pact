@@ -103,8 +103,8 @@ abstract class TestCase extends BaseTestCase
     public function invalidReasonProvider()
     {
         return array(
-            'string'       => array('foo', 'string', 'foo'),
-            'empty string' => array('', 'string', ''),
+            'string'       => array('foo', 'string', '"foo"'),
+            'empty string' => array('', 'string', '""'),
             'object'       => array(new \stdClass, 'instance of stdClass', 'stdClass'),
             'array'        => array(array(), 'array', '<ARRAY>'),
             'true'         => array(true, 'boolean', '<TRUE>'),

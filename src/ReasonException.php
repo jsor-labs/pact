@@ -14,18 +14,20 @@ final class ReasonException extends \RuntimeException implements PactThrowable
 
     public static function createForReason($reason)
     {
-        if (\is_bool($reason)) {
+        if (null === $reason) {
+            $value = '<NULL>';
+        } elseif (\is_bool($reason)) {
             $value = $reason ? '<TRUE>' : '<FALSE>';
+        } elseif (\is_float($reason) || \is_int($reason)) {
+            $value = (string) $reason;
         } elseif (\is_array($reason)) {
             $value = '<ARRAY>';
-        } elseif (\is_object($reason) && !\method_exists($reason, '__toString')) {
-            $value = \get_class($reason);
         } elseif (\is_resource($reason)) {
             $value = \get_resource_type($reason);
-        } elseif (null === $reason) {
-            $value = '<NULL>';
+        } elseif (\is_object($reason) && !\method_exists($reason, '__toString')) {
+            $value = \get_class($reason);
         } else {
-            $value = (string) $reason;
+            $value = "\"$reason\"";
         }
 
         $exception = new self("Promise rejected with reason $value.");
