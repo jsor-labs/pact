@@ -24,4 +24,11 @@ final class LogicException extends \LogicException implements PactThrowable
             'Cannot get the rejection reason of a non-rejected promise.'
         );
     }
+
+    public static function disableRejectionTrackerWithUnhandledRejections()
+    {
+        return new self(
+            'Cannot disable rejection tracker while it has unhandled rejections.'
+        );
+    }
 }

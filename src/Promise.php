@@ -58,6 +58,35 @@ final class Promise
     private $isCancelled = false;
 
     /**
+     * @var RejectionTracker
+     */
+    private static $rejectionTracker;
+
+    /**
+     * @var int|string
+     */
+    private $rejectionId;
+
+    public static function enableRejectionTracker(RejectionTrackerInterface $rejectionTracker)
+    {
+        if (null !== self::$rejectionTracker) {
+            self::disableRejectionTracker();
+        }
+
+        self::$rejectionTracker = $rejectionTracker;
+    }
+
+    public static function disableRejectionTracker()
+    {
+        if (!self::$rejectionTracker) {
+            return;
+        }
+
+        self::$rejectionTracker->onDisable();
+        self::$rejectionTracker = null;
+    }
+
+    /**
      * @param callable|null $resolver
      * @param callable|null $canceller
      */
@@ -250,6 +279,14 @@ final class Promise
         $callback = $isFulfilled ? $onFulfilled : $onRejected;
         $result = $target->result;
 
+        if (null !== $target->rejectionId) {
+            if (self::$rejectionTracker) {
+                self::$rejectionTracker->onHandle($target->rejectionId, $target);
+            }
+
+            $target->rejectionId = null;
+        }
+
         self::enqueue(static function () use ($child, $isFulfilled, $callback, $result) {
             if (null === $callback) {
                 if ($isFulfilled) {
@@ -359,6 +396,13 @@ final class Promise
         $this->handlers = null;
 
         if (!$handlers) {
+            if (
+                self::STATE_REJECTED === $this->state &&
+                self::$rejectionTracker
+            ) {
+                $this->rejectionId = self::$rejectionTracker->onReject($this);
+            }
+
             return;
         }
 
