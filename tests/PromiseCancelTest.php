@@ -550,10 +550,7 @@ class PromiseCancelTest extends TestCase
         $follower->cancel();
     }
 
-    /**
-     * @test
-     * @group 123
-     */
+    /** @test */
     public function it_invokes_own_cancel_and_on_foreign_cancellable_thenable()
     {
         $thenable = new SimpleCancellableTestThenable();
@@ -572,9 +569,7 @@ class PromiseCancelTest extends TestCase
         $this->assertTrue($thenable->cancelCalled);
     }
 
-    /**
-     * @test
-     */
+    /** @test */
     public function it_invokes_foreign_cancel_without_own_canceller()
     {
         $thenable = new SimpleCancellableTestThenable();
