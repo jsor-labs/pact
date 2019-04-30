@@ -12,13 +12,6 @@ Introduction
 This library implements promises for PHP including support for cancellation and 
 several useful tools for creating and composing promises.
 
-Documentation
----
-
-### Advanced
-
-* [**Assertions**](docs/assertions.md)
-
 Installation
 ---
 
@@ -30,12 +23,6 @@ This will install the latest supported version:
 ```bash
 $ composer require jsor/pact
 ```
-
-This project aims to run on any platform and thus does not require any PHP
-extensions and supports running on legacy PHP 5.3 through current PHP 7+.
-
-It's *highly recommended to use PHP 7+* for this project due to its vast
-performance improvements.
 
 License
 ---

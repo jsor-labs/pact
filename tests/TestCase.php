@@ -83,36 +83,23 @@ abstract class TestCase extends BaseTestCase
     public function createCallableMock()
     {
         return $this->getMockBuilder('\stdClass')
-            ->setMethods(array('__invoke'))
+            ->setMethods(['__invoke'])
             ->getMock();
-    }
-
-    public function invalidCallbackDataProvider()
-    {
-        return array(
-            'empty string' => array('', 'string'),
-            'object'       => array(new \stdClass, 'object'),
-            'array'        => array(array(), 'array'),
-            'true'         => array(true, 'boolean'),
-            'false'        => array(false, 'boolean'),
-            'truthy'       => array(1, 'integer'),
-            'falsey'       => array(0, 'integer')
-        );
     }
 
     public function invalidReasonProvider()
     {
-        return array(
-            'string'       => array('foo', 'string', '"foo"'),
-            'empty string' => array('', 'string', '""'),
-            'object'       => array(new \stdClass, 'instance of stdClass', 'stdClass'),
-            'array'        => array(array(), 'array', '<ARRAY>'),
-            'true'         => array(true, 'boolean', '<TRUE>'),
-            'false'        => array(false, 'boolean', '<FALSE>'),
-            'integer'      => array(1, 'integer', '1'),
-            'float'        => array(1.1, 'double', '1.1'),
-            'resource'     => array(\fopen('php://temp', 'r'), 'resource', 'stream'),
-            'null'        => array(null, 'null', '<NULL>'),
-        );
+        return [
+            'string' => ['foo', 'string', '"foo"'],
+            'empty string' => ['', 'string', '""'],
+            'object' => [new \stdClass, 'instance of stdClass', 'stdClass'],
+            'array' => [[], 'array', '<ARRAY>'],
+            'true' => [true, 'boolean', '<TRUE>'],
+            'false' => [false, 'boolean', '<FALSE>'],
+            'integer' => [1, 'integer', '1'],
+            'float' => [1.1, 'float', '1.1'],
+            'resource' => [\fopen('php://temp', 'r'), 'resource', 'stream'],
+            'null' => [null, 'null', '<NULL>'],
+        ];
     }
 }

@@ -306,8 +306,6 @@ class PromiseRejectTest extends TestCase
      **/
     public function it_wraps_non_throwable_reasons_in_rejection_exception($invalidReason, $type, $repr)
     {
-        $that = $this;
-
         $promise = new Promise(function ($res, $rej) use ($invalidReason) {
             $rej($invalidReason);
         });
@@ -315,13 +313,13 @@ class PromiseRejectTest extends TestCase
         $failure = null;
 
         $promise
-            ->then(null, function ($e) use ($that, $invalidReason, $type, $repr) {
-                $that->assertInstanceOf('Pact\ReasonException', $e);
+            ->then(null, function ($e) use ($invalidReason, $type, $repr) {
+                $this->assertInstanceOf('Pact\ReasonException', $e);
 
-                $that->assertEquals('Promise rejected with reason ' . $repr . '.', $e->getMessage());
+                $this->assertEquals('Promise rejected with reason ' . $repr . '.', $e->getMessage());
 
-                $that->assertTrue($e->hasReason());
-                $that->assertSame($invalidReason, $e->getReason());
+                $this->assertTrue($e->hasReason());
+                $this->assertSame($invalidReason, $e->getReason());
             })
             ->then(null, function ($e) use (&$failure) {
                 $failure = $e;
@@ -337,8 +335,6 @@ class PromiseRejectTest extends TestCase
      **/
     public function it_wraps_missing_reason_in_rejection_exception()
     {
-        $that = $this;
-
         $promise = new Promise(function ($res, $rej) {
             $rej();
         });
@@ -346,13 +342,13 @@ class PromiseRejectTest extends TestCase
         $failure = null;
 
         $promise
-            ->then(null, function ($e) use ($that) {
-                $that->assertInstanceOf('Pact\ReasonException', $e);
+            ->then(null, function ($e) {
+                $this->assertInstanceOf('Pact\ReasonException', $e);
 
-                $that->assertEquals('Promise rejected without a reason.', $e->getMessage());
+                $this->assertEquals('Promise rejected without a reason.', $e->getMessage());
 
-                $that->assertFalse($e->hasReason());
-                $that->assertNull($e->getReason());
+                $this->assertFalse($e->hasReason());
+                $this->assertNull($e->getReason());
             })
             ->then(null, function ($e) use (&$failure) {
                 $failure = $e;

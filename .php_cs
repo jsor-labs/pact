@@ -8,7 +8,7 @@ return PhpCsFixer\Config::create()
     ->setRules(array(
         '@PSR1' => true,
         '@PSR2' => true,
-        'array_syntax' => array('syntax' => 'long'),
+        'array_syntax' => array('syntax' => 'short'),
         'braces' => array(
             'allow_single_line_closure' => true
         ),

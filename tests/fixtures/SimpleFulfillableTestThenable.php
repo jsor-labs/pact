@@ -4,7 +4,7 @@ namespace Pact;
 
 class SimpleFulfillableTestThenable
 {
-    private $callbacks = array();
+    private $callbacks = [];
 
     public function then($onFulfilled = null, $onRejected = null)
     {

@@ -4,24 +4,21 @@ namespace Pact;
 
 final class Promise
 {
-    const STATE_PENDING = 0;
-    const STATE_FOLLOWING = 1;
-    const STATE_FOLLOWING_FOREIGN = 2;
-    const STATE_FULFILLED = 3;
-    const STATE_REJECTED = 4;
+    private const STATE_PENDING = 0;
+    private const STATE_FOLLOWING = 1;
+    private const STATE_FOLLOWING_FOREIGN = 2;
+    private const STATE_FULFILLED = 3;
+    private const STATE_REJECTED = 4;
 
     /**
      * Constant used to explicitly overwrite arguments and references.
      * This ensures that they do not show up in stack traces in PHP 7+.
      */
-    const GC_CLEANUP = '[Pact\Promise::GC_CLEANUP]';
+    private const GC_CLEANUP = '[Pact\Promise::GC_CLEANUP]';
 
-    /**
-     * @internal
-     */
-    public $state = Promise::STATE_PENDING;
+    private $state = Promise::STATE_PENDING;
 
-    private $handlers = array();
+    private $handlers = [];
 
     /**
      * The result once the promise got resolved.
@@ -60,35 +57,12 @@ final class Promise
     private $requiredCancelRequests = 0;
     private $isCancelled = false;
 
-    private static $queue;
-
     /**
      * @param callable|null $resolver
      * @param callable|null $canceller
-     * @throws TypeError
      */
-    public function __construct($resolver = null, $canceller = null)
+    public function __construct(callable $resolver = null, callable $canceller = null)
     {
-        if (null !== $resolver && !\is_callable($resolver)) {
-            throw new TypeError(
-                TypeError::messageForIncorrectArgumentType(
-                    'Argument 1 passed to Pact\Promise::__construct() must be callable or null',
-                    __METHOD__,
-                    $resolver
-                )
-            );
-        }
-
-        if (null !== $canceller && !\is_callable($canceller)) {
-            throw new TypeError(
-                TypeError::messageForIncorrectArgumentType(
-                    'Argument 2 passed to Pact\Promise::__construct() must be callable or null',
-                    __METHOD__,
-                    $canceller
-                )
-            );
-        }
-
         $this->canceller = $canceller;
 
         if (null !== $canceller) {
@@ -106,7 +80,7 @@ final class Promise
      * @param Promise|mixed|null $promiseOrValue
      * @return Promise
      */
-    public static function resolve($promiseOrValue = null)
+    public static function resolve($promiseOrValue = null): self
     {
         if ($promiseOrValue instanceof self) {
             return $promiseOrValue;
@@ -119,39 +93,11 @@ final class Promise
     }
 
     /**
-     * @param \Exception|\Throwable $reason
+     * @param \Throwable $reason
      * @return Promise
      */
-    public static function reject($reason)
+    public static function reject(\Throwable $reason): self
     {
-        if (\PHP_VERSION_ID >= 50408) {
-            \assert(
-                $assertion = \PHP_VERSION_ID >= 70000 ? $reason instanceof \Throwable : $reason instanceof \Exception,
-                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentClassType(
-                    \PHP_VERSION_ID >= 70000
-                        ? 'Argument 1 passed to Pact\Promise::reject() must implement interface Throwable'
-                        : 'Argument 1 passed to Pact\Promise::reject() must be an instance of Exception',
-                    __METHOD__,
-                    $reason
-                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
-            );
-        } else {
-            \assert(
-                $reason instanceof \Exception
-            );
-        }
-
-        // Allow rejection with non-throwable reasons in case assertions are disabled
-        if (\PHP_VERSION_ID >= 70000) {
-            if (!$reason instanceof \Throwable) {
-                $reason = ReasonException::createForReason($reason);
-            }
-        } else {
-            if (!$reason instanceof \Exception) {
-                $reason = ReasonException::createForReason($reason);
-            }
-        }
-
         $promise = new Promise();
         $promise->_reject($reason);
 
@@ -163,38 +109,8 @@ final class Promise
      * @param callable|null $onRejected
      * @return Promise
      */
-    public function then($onFulfilled = null, $onRejected = null)
+    public function then(callable $onFulfilled = null, callable $onRejected = null): self
     {
-        if (\PHP_VERSION_ID >= 50408) {
-            \assert(
-                $assertion = (null === $onFulfilled || \is_callable($onFulfilled)),
-                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
-                    'Argument 1 passed to Pact\Promise::then() must be callable or null',
-                    __METHOD__,
-                    $onFulfilled
-                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
-            );
-        } else {
-            \assert(
-                null === $onFulfilled || \is_callable($onFulfilled)
-            );
-        }
-
-        if (\PHP_VERSION_ID >= 50408) {
-            \assert(
-                $assertion = (null === $onRejected || \is_callable($onRejected)),
-                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
-                    'Argument 2 passed to Pact\Promise::then() must be callable or null',
-                    __METHOD__,
-                    $onRejected
-                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
-            );
-        } else {
-            \assert(
-                null === $onRejected || \is_callable($onRejected)
-            );
-        }
-
         $this->requiredCancelRequests++;
 
         $child = new Promise();
@@ -209,46 +125,23 @@ final class Promise
      * @param callable $onSettled
      * @return Promise
      */
-    public function always($onSettled)
+    public function always(callable $onSettled): self
     {
-        if (\PHP_VERSION_ID >= 50408) {
-            \assert(
-                $assertion = \is_callable($onSettled),
-                $assertion ? null : (($desc = TypeError::messageForIncorrectArgumentType(
-                    'Argument 1 passed to Pact\Promise::always() must be callable',
-                    __METHOD__,
-                    $onSettled
-                )) && \PHP_VERSION_ID >= 70000 ? new TypeError($desc) : $desc)
-            );
-        } else {
-            \assert(
-                \is_callable($onSettled)
-            );
-        }
-
         return $this->then(
-            function ($value) use ($onSettled) {
-                if (!\is_callable($onSettled)) {
-                    return $value;
-                }
-
-                return Promise::resolve($onSettled())->then(function () use ($value) {
+            static function ($value) use ($onSettled) {
+                return Promise::resolve($onSettled())->then(static function () use ($value) {
                     return $value;
                 });
             },
-            function ($reason) use ($onSettled) {
-                if (!\is_callable($onSettled)) {
-                    return Promise::reject($reason);
-                }
-
-                return Promise::resolve($onSettled())->then(function () use ($reason) {
+            static function (\Throwable $reason) use ($onSettled) {
+                return Promise::resolve($onSettled())->then(static function () use ($reason) {
                     return Promise::reject($reason);
                 });
             }
         );
     }
 
-    public function cancel()
+    public function cancel(): void
     {
         if (!$this->isPending()) {
             return;
@@ -267,12 +160,12 @@ final class Promise
                 $parent->requiredCancelRequests--;
 
                 if ($parent->requiredCancelRequests <= 0) {
-                    $parentCanceller = array(&$parent, 'cancel');
+                    $parentCanceller = [&$parent, 'cancel'];
                 }
             } else {
                 // Parent is a foreign promise, check for cancel() is already
                 // done in _resolveCallback()
-                $parentCanceller = array(&$parent, 'cancel');
+                $parentCanceller = [&$parent, 'cancel'];
             }
         }
 
@@ -282,7 +175,7 @@ final class Promise
 
         // Call the parent canceller after our own canceller
         if ($parentCanceller) {
-            \call_user_func($parentCanceller);
+            $parentCanceller();
         }
 
         $parent = self::GC_CLEANUP;
@@ -291,26 +184,17 @@ final class Promise
         $this->isCancelled = true;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFulfilled()
+    public function isFulfilled(): bool
     {
         return self::STATE_FULFILLED === $this->_target()->state;
     }
 
-    /**
-     * @return bool
-     */
-    public function isRejected()
+    public function isRejected(): bool
     {
         return self::STATE_REJECTED === $this->_target()->state;
     }
 
-    /**
-     * @return bool
-     */
-    public function isPending()
+    public function isPending(): bool
     {
         $target = $this->_target();
 
@@ -320,18 +204,11 @@ final class Promise
         );
     }
 
-    /**
-     * @return bool
-     */
-    public function isCancelled()
+    public function isCancelled(): bool
     {
         return $this->isCancelled;
     }
 
-    /**
-     * @return mixed
-     * @throws LogicException
-     */
     public function value()
     {
         $target = $this->_target();
@@ -343,11 +220,7 @@ final class Promise
         throw LogicException::valueFromNonFulfilledPromise();
     }
 
-    /**
-     * @return \Exception|\Throwable
-     * @throws LogicException
-     */
-    public function reason()
+    public function reason(): \Throwable
     {
         $target = $this->_target();
 
@@ -360,16 +233,16 @@ final class Promise
 
     private function _handle(
         Promise $child,
-        $onFulfilled = null,
-        $onRejected = null
-    ) {
+        callable $onFulfilled = null,
+        callable $onRejected = null
+    ): void {
         $target = $this->_target();
 
         if (
             self::STATE_FULFILLED !== $target->state &&
             self::STATE_REJECTED !== $target->state
         ) {
-            $target->handlers[] = array($child, $onFulfilled, $onRejected);
+            $target->handlers[] = [$child, $onFulfilled, $onRejected];
             return;
         }
 
@@ -377,8 +250,8 @@ final class Promise
         $callback = $isFulfilled ? $onFulfilled : $onRejected;
         $result = $target->result;
 
-        self::enqueue(function () use ($child, $isFulfilled, $callback, $result) {
-            if (!\is_callable($callback)) {
+        self::enqueue(static function () use ($child, $isFulfilled, $callback, $result) {
+            if (null === $callback) {
                 if ($isFulfilled) {
                     $child->_fulfill($result);
                 } else {
@@ -390,20 +263,15 @@ final class Promise
 
             try {
                 $child->_resolve(
-                    \call_user_func($callback, $result)
+                    $callback($result)
                 );
-            } catch (\Exception $e) {
-                $child->_reject($e);
             } catch (\Throwable $e) {
                 $child->_reject($e);
             }
         });
     }
 
-    /**
-     * @internal
-     */
-    public function _resolve($result = null)
+    private function _resolve($result = null): void
     {
         if (self::STATE_PENDING !== $this->state) {
             return;
@@ -427,7 +295,7 @@ final class Promise
             }
 
             $this->state = self::STATE_FOLLOWING_FOREIGN;
-            $this->_resolveFromCallback(array($result, 'then'), true);
+            $this->_resolveFromCallback([$result, 'then'], true);
 
             return;
         }
@@ -465,23 +333,17 @@ final class Promise
         $this->handlers = null;
     }
 
-    /**
-     * @internal
-     */
-    public function _fulfill($value)
+    private function _fulfill($value): void
     {
         $this->_settle(self::STATE_FULFILLED, $value);
     }
 
-    /**
-     * @internal
-     */
-    public function _reject($reason)
+    private function _reject($reason): void
     {
         $this->_settle(self::STATE_REJECTED, $reason);
     }
 
-    private function _settle($state, $result)
+    private function _settle($state, $result): void
     {
         if (self::STATE_PENDING !== $this->state) {
             return;
@@ -509,7 +371,7 @@ final class Promise
         }
     }
 
-    private function _target()
+    private function _target(): self
     {
         $target = $this;
 
@@ -520,7 +382,7 @@ final class Promise
         return $target;
     }
 
-    private function _resolveFromCallback($cb, $unblock = false)
+    private function _resolveFromCallback(callable $cb, bool $unblock = false): void
     {
         $callback = $cb;
         $cb = self::GC_CLEANUP;
@@ -551,24 +413,15 @@ final class Promise
             // See also resolveFunction() and rejectFunction() for more details.
             $target = &$this;
 
-            \call_user_func(
-                $callback,
+            $callback(
                 self::resolveFunction($target, $unblock),
                 self::rejectFunction($target, $unblock)
             );
-        } catch (\Exception $e) {
-            $target = self::GC_CLEANUP;
-
-            if ($unblock) {
-                $this->state = Promise::STATE_PENDING;
-            }
-
-            $this->_reject($e);
         } catch (\Throwable $e) {
             $target = self::GC_CLEANUP;
 
             if ($unblock) {
-                $this->state = Promise::STATE_PENDING;
+                $this->state = self::STATE_PENDING;
             }
 
             $this->_reject($e);
@@ -587,9 +440,9 @@ final class Promise
      * These assumptions are covered by the test suite, so if you ever feel like
      * refactoring this, go ahead, any alternative suggestions are welcome!
      */
-    private static function resolveFunction(self &$target, $unblock)
+    private static function resolveFunction(self &$target, bool $unblock): callable
     {
-        return function ($value = null) use (&$target, $unblock) {
+        return static function ($value = null) use (&$target, $unblock) {
             if (!$target instanceof Promise) {
                 return;
             }
@@ -615,13 +468,13 @@ final class Promise
      * These assumptions are covered by the test suite, so if you ever feel like
      * refactoring this, go ahead, any alternative suggestions are welcome!
      */
-    private static function rejectFunction(self &$target, $unblock)
+    private static function rejectFunction(self &$target, bool $unblock): callable
     {
         // Allow rejecting with non-throwable reasons to ensure
         // interoperability with foreign promise implementations which
         // may allow arbitrary reason types or even rejecting without
         // a reason.
-        return function ($reason = null) use (&$target, $unblock) {
+        return static function ($reason = null) use (&$target, $unblock) {
             if (!$target instanceof Promise) {
                 return;
             }
@@ -645,12 +498,19 @@ final class Promise
         };
     }
 
-    private static function enqueue($task)
+    private static function enqueue(callable $task): void
     {
-        if (!self::$queue) {
-            self::$queue = new Internal\Queue();
+        static $tasks = [];
+
+        if (1 !== \array_push($tasks, $task)) {
+            return;
         }
 
-        self::$queue->enqueue($task);
+        for ($i = \key($tasks); isset($tasks[$i]); $i++) {
+            $tasks[$i]();
+            unset($tasks[$i]);
+        }
+
+        $tasks = [];
     }
 }

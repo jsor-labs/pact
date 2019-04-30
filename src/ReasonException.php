@@ -7,12 +7,12 @@ final class ReasonException extends \RuntimeException implements PactThrowable
     private $reason;
     private $hasReason = false;
 
-    public static function createWithoutReason()
+    public static function createWithoutReason(): self
     {
         return new self('Promise rejected without a reason.');
     }
 
-    public static function createForReason($reason)
+    public static function createForReason($reason): self
     {
         if (null === $reason) {
             $value = '<NULL>';
@@ -38,7 +38,7 @@ final class ReasonException extends \RuntimeException implements PactThrowable
         return $exception;
     }
 
-    public function hasReason()
+    public function hasReason(): bool
     {
         return $this->hasReason;
     }
